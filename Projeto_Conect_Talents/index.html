@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Acompanhe indicadores, vagas recentes e atividades da sua empresa no ConectaTalentos.">
+  <title>Dashboard — ConectaTalentos</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <script src="js/theme.js"></script>
+  <script src="js/auth.js"></script>
+  <script>if (!AuthData.isAutenticado()) window.location.replace('login.html');</script>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar (renderizada via JS) -->
+    <div id="sidebar-container"></div>
+
+    <div class="main-content">
+      <!-- Header (renderizado via JS) -->
+      <div id="header-container"></div>
+
+      <main class="page-content">
+        <!-- Saudação -->
+        <section class="dashboard-greeting">
+          <h1 class="page-title">Olá, Empresa X 👋</h1>
+          <p class="page-subtitle">Aqui está um resumo das suas atividades no ConectaTalentos.</p>
+        </section>
+
+        <!-- Cards de indicadores -->
+        <section aria-label="Seus processos hoje">
+          <h2 class="dashboard-section-title">Seus processos hoje</h2>
+          <div class="stats-row">
+            <!-- Card Vagas -->
+            <div class="card stat-card">
+              <div class="stat-card__header">
+                <div class="stat-card__icon stat-card__icon--blue">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+                </div>
+                <a href="vagas.html" class="chevron-btn" aria-label="Ver vagas">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </a>
+              </div>
+              <div>
+                <div class="stat-card__value" id="stat-vagas">08</div>
+                <div class="stat-card__label">Vagas</div>
+              </div>
+              <div class="stat-card__footer">
+                <span class="trend">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                  <span id="stat-vagas-novas">2 novas esta semana</span>
+                </span>
+                <a href="vagas.html" class="chevron-btn" aria-label="Ir para vagas">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </a>
+              </div>
+            </div>
+
+            <!-- Card Candidatos -->
+            <div class="card stat-card">
+              <div class="stat-card__header">
+                <div class="stat-card__icon stat-card__icon--purple">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+              </div>
+              <div>
+                <div class="stat-card__value" id="stat-candidatos">34</div>
+                <div class="stat-card__label">Candidatos</div>
+              </div>
+              <div class="stat-card__footer">
+                <span class="trend">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                  <span id="stat-candidaturas-novas">6 novas candidaturas</span>
+                </span>
+                <a href="candidatos.html" class="chevron-btn" aria-label="Ir para candidatos">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </a>
+              </div>
+            </div>
+
+            <!-- Banner Treinamentos -->
+            <div class="promo-banner">
+              <div class="promo-banner__content">
+                <h3 class="promo-banner__title">Mais diversidade, mais talentos.</h3>
+                <p class="promo-banner__text">Conheça nossos treinamentos e fortaleça sua equipe.</p>
+                <a href="treinamentos.html" class="btn btn--white">Ver treinamentos &gt;</a>
+              </div>
+              <img
+                class="promo-banner__image"
+                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop&crop=face"
+                alt="Profissional sorrindo"
+                loading="lazy"
+              >
+            </div>
+          </div>
+        </section>
+
+        <!-- Vagas recentes -->
+        <section aria-label="Vagas recentes">
+          <div class="recent-jobs-header">
+            <h2 class="dashboard-section-title" style="margin-bottom:0">Vagas recentes</h2>
+            <a href="vagas.html" class="link-arrow">
+              Ver todas as vagas
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </a>
+          </div>
+
+          <!-- Lista renderizada via API -->
+          <div class="card recent-jobs-list" id="recent-jobs-list"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/mock-data.js"></script>
+  <script src="js/hiring-data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    /* Inicializa layout compartilhado */
+    initLayout('dashboard');
+
+    /* Renderiza lista de vagas recentes */
+    const recentJobsList = document.getElementById('recent-jobs-list');
+    const safe = HiringData.escapeHtml;
+    recentJobsList.innerHTML = '<p class="empty-message">Carregando...</p>';
+    document.getElementById('stat-vagas').textContent = '...';
+    document.getElementById('stat-candidatos').textContent = '...';
+    document.getElementById('stat-vagas-novas').textContent = '— esta semana';
+    document.getElementById('stat-candidaturas-novas').textContent = '— novas candidaturas';
+
+    (async function carregarDashboard() {
+      try {
+        const [vagas, candidatos] = await Promise.all([
+          HiringData.getVacancies(),
+          HiringData.getCandidates()
+        ]);
+        const vagasRecentes = vagas.slice(0, 4);
+        document.getElementById('stat-vagas').textContent = String(vagas.length).padStart(2, '0');
+        document.getElementById('stat-candidatos').textContent = String(candidatos.length).padStart(2, '0');
+        recentJobsList.innerHTML = vagasRecentes.length ? vagasRecentes.map(vaga => `
+      <a class="job-row" data-vaga-id="${vaga.id}" href="detalhes-vaga.html?id=${vaga.id}">
+        ${renderJobIcon(vaga)}
+        <div class="job-row__info">
+          <div class="job-row__title">${safe(vaga.titulo)}</div>
+          <div class="job-row__company">${safe(vaga.empresa)}</div>
+        </div>
+        <div class="job-row__meta">
+          <span class="meta-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            ${safe(vaga.localizacao)}
+          </span>
+          <span class="meta-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+            ${safe(vaga.tipo)}
+          </span>
+          ${renderCandidaturasBadge(vaga)}
+        </div>
+        <div class="chevron-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </a>
+        `).join('') : '<p class="empty-message">Nenhuma vaga cadastrada no momento.</p>';
+      } catch {
+        recentJobsList.innerHTML = '<p class="empty-message">Não foi possível carregar os dados. Tente novamente.</p>';
+        document.getElementById('stat-vagas').textContent = '—';
+        document.getElementById('stat-candidatos').textContent = '—';
+      }
+    })();
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="js/animations.js"></script>
+</body>
+</html>

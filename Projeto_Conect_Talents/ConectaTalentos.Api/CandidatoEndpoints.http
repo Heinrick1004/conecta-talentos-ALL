@@ -1,0 +1,133 @@
+@baseUrl = https://localhost:7000
+@candidateEmail = candidato.mobile.teste@example.com
+@candidatePassword = Candidate-Test-2026!
+@candidateToken = {{loginCandidato.response.body.token}}
+@companyEmail = contato@empresax.example
+@companyPassword = senha-da-empresa
+@companyToken = {{loginEmpresa.response.body.token}}
+@vagaId = 1
+@candidaturaId = 101
+@notificacaoId = 1
+
+### Registrar candidato (use um e-mail ainda não cadastrado)
+POST {{baseUrl}}/api/auth/candidato/registrar
+Content-Type: application/json
+
+{
+  "nomeCompleto": "Candidato Mobile de Teste",
+  "email": "{{candidateEmail}}",
+  "senha": "{{candidatePassword}}",
+  "telefone": "15999990000",
+  "cidade": "Sorocaba",
+  "uf": "SP",
+  "habilidades": "Flutter; Dart; API REST"
+}
+
+### Repetir o registro para validar conflito de e-mail
+POST {{baseUrl}}/api/auth/candidato/registrar
+Content-Type: application/json
+
+{
+  "nomeCompleto": "Candidato Mobile de Teste",
+  "email": "{{candidateEmail}}",
+  "senha": "{{candidatePassword}}",
+  "telefone": "15999990000",
+  "cidade": "Sorocaba",
+  "uf": "SP",
+  "habilidades": "Flutter; Dart; API REST"
+}
+
+### Login de candidato
+# @name loginCandidato
+POST {{baseUrl}}/api/auth/candidato/login
+Content-Type: application/json
+
+{
+  "email": "{{candidateEmail}}",
+  "senha": "{{candidatePassword}}"
+}
+
+### Listar vagas abertas
+GET {{baseUrl}}/api/candidato/vagas
+Authorization: Bearer {{candidateToken}}
+
+### Filtrar vagas por cidade, modalidade e sincronização incremental
+GET {{baseUrl}}/api/candidato/vagas?cidade=Sorocaba&modalidade=Remoto&desde=2026-09-01T00:00:00
+Authorization: Bearer {{candidateToken}}
+
+### Obter uma vaga específica, inclusive se encerrada
+GET {{baseUrl}}/api/candidato/vagas/{{vagaId}}
+Authorization: Bearer {{candidateToken}}
+
+### Listar candidaturas do candidato
+GET {{baseUrl}}/api/candidato/candidaturas
+Authorization: Bearer {{candidateToken}}
+
+### Listar candidaturas alteradas desde uma data
+GET {{baseUrl}}/api/candidato/candidaturas?desde=2026-09-01T00:00:00
+Authorization: Bearer {{candidateToken}}
+
+### Criar candidatura
+POST {{baseUrl}}/api/candidato/candidaturas
+Authorization: Bearer {{candidateToken}}
+Content-Type: application/json
+
+{
+  "vagaId": {{vagaId}}
+}
+
+### Repetir candidatura para validar conflito
+POST {{baseUrl}}/api/candidato/candidaturas
+Authorization: Bearer {{candidateToken}}
+Content-Type: application/json
+
+{
+  "vagaId": {{vagaId}}
+}
+
+### Listar notificações (somente leitura; criadas pelo trigger do banco)
+GET {{baseUrl}}/api/candidato/notificacoes
+Authorization: Bearer {{candidateToken}}
+
+### Marcar notificação como lida
+PATCH {{baseUrl}}/api/candidato/notificacoes/{{notificacaoId}}/marcar-lida
+Authorization: Bearer {{candidateToken}}
+
+### Obter perfil
+GET {{baseUrl}}/api/candidato/perfil
+Authorization: Bearer {{candidateToken}}
+
+### Atualizar somente os campos permitidos do perfil
+PUT {{baseUrl}}/api/candidato/perfil
+Authorization: Bearer {{candidateToken}}
+Content-Type: application/json
+
+{
+  "nomeCompleto": "Candidato Mobile de Teste",
+  "telefone": "15999990001",
+  "cidade": "Sorocaba",
+  "uf": "SP",
+  "habilidades": "Flutter; Dart; Integração"
+}
+
+### Login de empresa para decidir uma candidatura
+# @name loginEmpresa
+POST {{baseUrl}}/api/auth/empresa/login
+Content-Type: application/json
+
+{
+  "email": "{{companyEmail}}",
+  "senha": "{{companyPassword}}"
+}
+
+### Decidir candidatura como empresa proprietária da vaga
+PATCH {{baseUrl}}/api/candidaturas/{{candidaturaId}}/decidir
+Authorization: Bearer {{companyToken}}
+Content-Type: application/json
+
+{
+  "decisao": "Aceita"
+}
+
+### Acesso sem token deve retornar 401
+GET {{baseUrl}}/api/candidato/perfil

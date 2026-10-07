@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cadastre ou edite oportunidades de trabalho da sua empresa no ConectaTalentos.">
+  <title>Nova vaga — ConectaTalentos</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <script src="js/theme.js"></script>
+  <script src="js/auth.js"></script>
+  <script>if (!AuthData.isAutenticado()) window.location.replace('login.html');</script>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="app-layout">
+    <div id="sidebar-container"></div>
+    <div class="main-content">
+      <div id="header-container"></div>
+      <main class="page-content">
+        <a class="workflow-back" href="vagas.html">&larr; Voltar para vagas</a>
+        <h1 class="page-title" id="form-title">Nova vaga</h1>
+        <p class="page-subtitle">Preencha os dados da oportunidade da sua empresa.</p>
+
+        <form class="card workflow-form" id="vacancyForm">
+          <div class="workflow-field">
+            <label for="titulo">Título da vaga</label>
+            <input class="workflow-input" id="titulo" name="titulo" type="text" maxlength="100" required>
+          </div>
+          <div class="workflow-field">
+            <label for="descricao">Descrição</label>
+            <textarea class="workflow-input workflow-textarea" id="descricao" name="descricao" rows="5" required></textarea>
+          </div>
+          <div class="workflow-field">
+            <label for="requisitos">Requisitos</label>
+            <textarea class="workflow-input workflow-textarea" id="requisitos" name="requisitos" rows="4" required></textarea>
+          </div>
+          <div class="workflow-grid">
+            <div class="workflow-field">
+              <label for="cidade">Cidade</label>
+              <input class="workflow-input" id="cidade" name="cidade" type="text" autocomplete="address-level2" required>
+            </div>
+            <div class="workflow-field">
+              <label for="estado">Estado</label>
+              <select class="workflow-input" id="estado" name="estado" autocomplete="address-level1" required>
+                <option value="" selected disabled>Selecione a UF</option>
+                <option value="AC">Acre</option><option value="AL">Alagoas</option><option value="AP">Amapá</option><option value="AM">Amazonas</option>
+                <option value="BA">Bahia</option><option value="CE">Ceará</option><option value="DF">Distrito Federal</option><option value="ES">Espírito Santo</option>
+                <option value="GO">Goiás</option><option value="MA">Maranhão</option><option value="MT">Mato Grosso</option><option value="MS">Mato Grosso do Sul</option>
+                <option value="MG">Minas Gerais</option><option value="PA">Pará</option><option value="PB">Paraíba</option><option value="PR">Paraná</option>
+                <option value="PE">Pernambuco</option><option value="PI">Piauí</option><option value="RJ">Rio de Janeiro</option><option value="RN">Rio Grande do Norte</option>
+                <option value="RS">Rio Grande do Sul</option><option value="RO">Rondônia</option><option value="RR">Roraima</option><option value="SC">Santa Catarina</option>
+                <option value="SP">São Paulo</option><option value="SE">Sergipe</option><option value="TO">Tocantins</option>
+              </select>
+            </div>
+            <div class="workflow-field">
+              <label for="tipo">Modalidade</label>
+              <select class="workflow-input" id="tipo" name="tipo" required>
+                <option value="Presencial">Presencial</option>
+                <option value="Remoto">Remoto</option>
+                <option value="Híbrido">Híbrido</option>
+              </select>
+            </div>
+            <div class="workflow-field">
+              <label for="status">Status</label>
+              <select class="workflow-input" id="status" name="status" required>
+                <option value="Aberta">Aberta</option>
+                <option value="Encerrada">Encerrada</option>
+              </select>
+            </div>
+            <div class="workflow-field">
+              <label for="dataInicio">Data de início</label>
+              <input class="workflow-input" id="dataInicio" name="dataInicio" type="date" required>
+            </div>
+            <div class="workflow-field">
+              <label for="dataFim">Data de encerramento</label>
+              <input class="workflow-input" id="dataFim" name="dataFim" type="date" required aria-describedby="dataFimError">
+              <span class="workflow-field__error" id="dataFimError" role="alert" hidden>A data de encerramento deve ser posterior à data de início.</span>
+            </div>
+          </div>
+          <div class="workflow-actions">
+            <a class="btn btn--outline" href="vagas.html">Cancelar</a>
+            <button class="btn btn--primary" type="submit">Salvar vaga</button>
+          </div>
+        </form>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/mock-data.js"></script>
+  <script src="js/hiring-data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    initLayout('vagas');
+
+    const vacancyForm = document.getElementById('vacancyForm');
+    const vacancyId = new URLSearchParams(window.location.search).get('id');
+    let currentVacancy = null;
+
+    function fillVacancyForm(vacancy) {
+      document.title = 'Editar vaga — ConectaTalentos';
+      document.getElementById('form-title').textContent = 'Editar vaga';
+      document.getElementById('titulo').value = vacancy.titulo;
+      document.getElementById('descricao').value = vacancy.descricao;
+      document.getElementById('requisitos').value = vacancy.requisitos;
+      const [city, state] = vacancy.localizacao.split(' - ');
+      document.getElementById('cidade').value = vacancy.cidade || city;
+      document.getElementById('estado').value = vacancy.estado || state;
+      document.getElementById('tipo').value = vacancy.tipo;
+      document.getElementById('status').value = vacancy.status;
+      document.getElementById('dataInicio').value = vacancy.dataInicio;
+      document.getElementById('dataFim').value = vacancy.dataFim;
+    }
+
+    if (vacancyId) {
+      HiringData.getVacancy(vacancyId).then(vacancy => {
+        if (!vacancy) {
+          window.location.replace('vagas.html');
+          return;
+        }
+        currentVacancy = vacancy;
+        fillVacancyForm(vacancy);
+      }).catch(() => alert('Não foi possível carregar a vaga para edição.'));
+    }
+
+    const startDateInput = document.getElementById('dataInicio');
+    const endDateInput = document.getElementById('dataFim');
+    const dateError = document.getElementById('dataFimError');
+
+    function validateDateRange() {
+      const invalid = startDateInput.value && endDateInput.value && endDateInput.value <= startDateInput.value;
+      dateError.hidden = !invalid;
+      endDateInput.setAttribute('aria-invalid', String(Boolean(invalid)));
+      return !invalid;
+    }
+
+    startDateInput.addEventListener('input', validateDateRange);
+    endDateInput.addEventListener('input', validateDateRange);
+
+    vacancyForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      if (!validateDateRange()) return;
+      const formData = Object.fromEntries(new FormData(vacancyForm));
+      formData.id = vacancyId;
+      const submitButton = vacancyForm.querySelector('[type="submit"]');
+      submitButton.disabled = true;
+      try {
+        const savedVacancy = await HiringData.saveVacancy(formData);
+        window.location.href = savedVacancy.id
+          ? `detalhes-vaga.html?id=${savedVacancy.id}`
+          : 'vagas.html';
+      } catch (error) {
+        alert(error.message || 'Não foi possível salvar a vaga. Tente novamente.');
+        submitButton.disabled = false;
+      }
+    });
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="js/animations.js"></script>
+</body>
+</html>

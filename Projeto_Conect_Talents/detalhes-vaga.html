@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Consulte requisitos e candidaturas das vagas da sua empresa no ConectaTalentos.">
+  <title>Detalhes da vaga — ConectaTalentos</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <script src="js/theme.js"></script>
+  <script src="js/auth.js"></script>
+  <script>if (!AuthData.isAutenticado()) window.location.replace('login.html');</script>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="app-layout">
+    <div id="sidebar-container"></div>
+    <div class="main-content">
+      <div id="header-container"></div>
+      <main class="page-content">
+        <a class="workflow-back" href="vagas.html">&larr; Voltar para vagas</a>
+        <div id="vacancyDetails"></div>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/mock-data.js"></script>
+  <script src="js/hiring-data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    initLayout('vagas');
+
+    const vacancyId = new URLSearchParams(window.location.search).get('id');
+    const vacancyDetails = document.getElementById('vacancyDetails');
+    const safe = HiringData.escapeHtml;
+
+    vacancyDetails.innerHTML = '<p class="empty-message">Carregando...</p>';
+
+    function renderApplication(application) {
+      const candidate = application.candidato;
+      const pending = application.status === 'Pendente';
+      const statusClass = application.status.toLowerCase();
+      return `
+        <article class="card application-card">
+          <div class="application-person">
+            ${HiringData.renderAvatar(candidate)}
+            <div class="application-person__details">
+              <a class="application-person__name" href="perfil-candidato.html?id=${candidate.id}">${safe(candidate.nome)}</a>
+              <p>${safe(candidate.cargo)} <span aria-hidden="true">&middot;</span> ${safe(candidate.localizacao)}</p>
+              <div class="skill-list">${candidate.habilidades.map(skill => `<span class="skill-tag">${safe(skill)}</span>`).join('')}</div>
+            </div>
+          </div>
+          <div class="application-actions">
+            <span class="application-status application-status--${statusClass}">${safe(application.status)}</span>
+            <div class="decision-buttons">
+              <button class="btn btn--accept" type="button" data-application-id="${application.id}" data-application-action="Aceita" ${pending ? '' : 'disabled'}>Aceitar</button>
+              <button class="btn btn--decline" type="button" data-application-id="${application.id}" data-application-action="Recusada" ${pending ? '' : 'disabled'}>Recusar</button>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    async function renderVacancy() {
+      const vacancy = await HiringData.getVacancy(vacancyId);
+      if (!vacancy) {
+        window.location.replace('vagas.html');
+        return;
+      }
+      document.title = `${vacancy.titulo} — ConectaTalentos`;
+      const statusClass = vacancy.status === 'Encerrada' ? 'closed' : 'open';
+      const applications = await HiringData.getApplicationsForVacancy(vacancy.id);
+      vacancyDetails.innerHTML = `
+        <section class="card vacancy-detail-hero">
+          <div class="vacancy-detail-heading">
+            <div>
+              <span class="eyebrow">Oportunidade da empresa</span>
+              <h1 class="page-title">${safe(vacancy.titulo)}</h1>
+              <p class="page-subtitle">${safe(vacancy.empresa)} <span aria-hidden="true">&middot;</span> ${safe(vacancy.localizacao)} <span aria-hidden="true">&middot;</span> ${safe(vacancy.tipo)} <span aria-hidden="true">&middot;</span> Início: ${HiringData.formatDate(vacancy.dataInicio)} <span aria-hidden="true">&middot;</span> Encerra: ${HiringData.formatDate(vacancy.dataFim)}</p>
+            </div>
+            <span class="badge job-status job-status--${statusClass}">${safe(vacancy.status)}</span>
+          </div>
+          <div class="workflow-actions">
+            <a class="btn btn--outline" href="cadastro-vaga.html?id=${vacancy.id}">Editar vaga</a>
+            ${vacancy.status === 'Aberta' ? '<button class="btn btn--decline" id="closeVacancy" type="button">Encerrar vaga</button>' : '<button class="btn btn--decline" id="deleteVacancy" type="button">Excluir vaga</button>'}
+          </div>
+        </section>
+
+        <div class="vacancy-detail-grid">
+          <section class="card detail-copy">
+            <h2>Descrição</h2>
+            <p>${safe(vacancy.descricao)}</p>
+          </section>
+          <section class="card detail-copy">
+            <h2>Requisitos</h2>
+            <p>${safe(vacancy.requisitos)}</p>
+          </section>
+        </div>
+
+        <section class="workflow-section">
+          <div class="workflow-section__heading">
+            <div>
+              <h2>Candidatos</h2>
+              <p>Inscrições para esta vaga</p>
+            </div>
+            <span class="badge badge--count">${applications.length}</span>
+          </div>
+          <div id="vacancyApplications" class="application-list">
+            ${applications.length ? applications.map(renderApplication).join('') : '<p class="empty-message card">Ainda não há candidaturas para esta vaga.</p>'}
+          </div>
+        </section>
+      `;
+
+      const closeButton = document.getElementById('closeVacancy');
+        if (closeButton) closeButton.addEventListener('click', async () => {
+          try {
+            await HiringData.closeVacancy(vacancy.id);
+            await renderVacancy();
+          } catch {
+            vacancyDetails.innerHTML = '<p class="empty-message">Não foi possível atualizar a vaga. Tente novamente.</p>';
+          }
+      });
+
+      const deleteButton = document.getElementById('deleteVacancy');
+        if (deleteButton) deleteButton.addEventListener('click', async () => {
+        const confirmado = confirm(`Tem certeza que deseja excluir a vaga "${vacancy.titulo}"? Essa ação não pode ser desfeita.`);
+        if (!confirmado) return;
+          try {
+            await HiringData.deleteVacancy(vacancy.id);
+            window.location.href = 'vagas.html';
+          } catch {
+            vacancyDetails.innerHTML = '<p class="empty-message">Não foi possível excluir a vaga. Tente novamente.</p>';
+          }
+      });
+
+      const applicationList = document.getElementById('vacancyApplications');
+        applicationList.addEventListener('click', async event => {
+        const action = event.target.closest('[data-application-action]');
+        if (!action || action.disabled) return;
+          try {
+            await HiringData.decideApplication(action.dataset.applicationId, action.dataset.applicationAction);
+            await renderVacancy();
+          } catch {
+            vacancyDetails.innerHTML = '<p class="empty-message">Não foi possível atualizar a candidatura. Tente novamente.</p>';
+          }
+      });
+    }
+
+    renderVacancy().catch(() => {
+      vacancyDetails.innerHTML = '<p class="empty-message">Não foi possível carregar os dados. Tente novamente.</p>';
+    });
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="js/animations.js"></script>
+</body>
+</html>

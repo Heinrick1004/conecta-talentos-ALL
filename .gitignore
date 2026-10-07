@@ -1,0 +1,46 @@
+# Flutter and Dart
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+build/
+**/.widget_preview/
+
+# Android and Gradle
+.gradle/
+**/.gradle/
+
+# ASP.NET Core / Visual Studio
+**/bin/
+**/obj/
+.vs/
+*.user
+*.suo
+
+# IDE settings
+.idea/
+.vscode/
+
+# Operating system files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Logs and local archives
+*.log
+*.rar
+
+# Local secrets and private certificates
+.env
+.env.*
+!.env.example
+**/secrets.json
+**/secrets.*.json
+*.pfx
+*.p12
+
+# API configuration containing the local JWT signing secret
+/Projeto_Conect_Talents/ConectaTalentos.Api/appsettings.json
+/Projeto_Conect_Talents/ConectaTalentos.Api/appsettings.*.json
+!/Projeto_Conect_Talents/ConectaTalentos.Api/appsettings.Development.json
+!/Projeto_Conect_Talents/ConectaTalentos.Api/appsettings.example.json

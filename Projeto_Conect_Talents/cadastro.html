@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cadastre sua empresa no ConectaTalentos e comece a encontrar talentos.">
+  <title>Cadastro de empresa — ConectaTalentos</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <script src="js/theme.js"></script>
+  <script src="js/auth.js"></script>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="login-page register-page">
+  <div class="login-shell register-shell">
+    <section class="login-left" aria-label="Apresentação da plataforma">
+      <div class="login-left__logo">
+        <svg class="sidebar__logo-icon" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="14" cy="22" r="10" fill="#E8541D" opacity="0.85"/>
+          <circle cx="30" cy="22" r="10" fill="#FF6B2C"/>
+          <path d="M14 12 Q22 22 14 32" stroke="white" stroke-width="2" fill="none" opacity="0.5"/>
+          <path d="M30 12 Q22 22 30 32" stroke="white" stroke-width="2" fill="none" opacity="0.5"/>
+        </svg>
+        <div class="sidebar__logo-text">
+          <div class="sidebar__brand">
+            <span class="brand-conecta">Conecta</span><span class="brand-talentos">Talentos</span>
+          </div>
+          <span class="sidebar__slogan">Pessoas certas. Grandes resultados.</span>
+        </div>
+      </div>
+
+      <h1 class="login-left__title">
+        Seu talento conecta com
+        <span>novas oportunidades.</span>
+      </h1>
+      <p class="login-left__text">
+        ConectaTalentos é a plataforma que aproxima candidatos e empresas, promovendo um futuro mais inclusivo, diverso e cheio de possibilidades.
+      </p>
+
+      <div class="login-skyline" aria-hidden="true">
+        <svg viewBox="0 0 500 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="20" y="40" width="40" height="50" fill="#2A2A2A"/>
+          <rect x="70" y="20" width="50" height="70" fill="#3A3A3A"/>
+          <rect x="130" y="32" width="36" height="58" fill="#2A2A2A"/>
+          <rect x="180" y="10" width="60" height="80" fill="#B83D13"/>
+          <rect x="250" y="28" width="44" height="62" fill="#3A3A3A"/>
+          <rect x="304" y="16" width="52" height="74" fill="#2A2A2A"/>
+          <rect x="368" y="36" width="40" height="54" fill="#C74312"/>
+          <rect x="420" y="24" width="48" height="66" fill="#3A3A3A"/>
+        </svg>
+      </div>
+      <div class="login-wave" aria-hidden="true"></div>
+
+      <div class="login-people" aria-hidden="true">
+        <svg viewBox="0 0 460 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="78" cy="238" rx="62" ry="18" fill="#111111" opacity="0.18"/>
+          <path d="M38 250c4-58 18-92 40-92s36 34 40 92" fill="#E8541D"/>
+          <circle cx="78" cy="86" r="28" fill="#3A2418"/>
+          <circle cx="78" cy="92" r="22" fill="#C48A62"/>
+          <path d="M54 82c8-28 40-32 50-8 2 8-8 12-16 8-10 14-28 12-34 0z" fill="#2A1810"/>
+          <circle cx="70" cy="92" r="2" fill="#2A1810"/>
+          <circle cx="86" cy="92" r="2" fill="#2A1810"/>
+          <path d="M70 102c5 4 11 4 16 0" stroke="#8B5A3C" stroke-width="1.5" fill="none"/>
+          <path d="M128 250c6-70 22-108 52-108s46 38 52 108" fill="#2A2A2A"/>
+          <circle cx="180" cy="78" r="26" fill="#F3D2B3"/>
+          <path d="M154 70c10-30 44-34 54-6 4 10-6 16-16 10-8 16-28 16-38-4z" fill="#1A1A1A"/>
+          <path d="M148 92c-8 18-2 34 12 38 8-18 20-20 28-6 10-4 16-16 12-30-10 8-32 8-52-2z" fill="#1A1A1A"/>
+          <circle cx="172" cy="80" r="2" fill="#3A2418"/>
+          <circle cx="188" cy="80" r="2" fill="#3A2418"/>
+          <path d="M210 250c8-78 24-118 50-118s42 40 50 118" fill="#FF6B2C"/>
+          <circle cx="260" cy="92" r="24" fill="#E8B48A"/>
+          <path d="M236 86c10-34 50-36 50 2 2 10-12 12-18 6-10 20-28 18-32-8z" fill="#1A1A1A"/>
+          <path d="M236 108c8 22 36 24 48 4" fill="#1A1A1A"/>
+          <circle cx="252" cy="94" r="2" fill="#3A2418"/>
+          <circle cx="268" cy="94" r="2" fill="#3A2418"/>
+          <path d="M300 250c6-72 20-112 48-112s42 40 48 112" fill="#B83D13"/>
+          <circle cx="348" cy="82" r="25" fill="#C48A62"/>
+          <path d="M328 70c8-24 40-26 46-2 8 14-8 16-14 8-4 16-20 18-32-6z" fill="#2A1810"/>
+          <rect x="332" y="86" width="22" height="10" rx="2" fill="#1E293B" opacity="0.7"/>
+          <circle cx="340" cy="84" r="2" fill="#2A1810"/>
+          <circle cx="356" cy="84" r="2" fill="#2A1810"/>
+        </svg>
+      </div>
+
+      <div class="login-left__features">
+        <div class="login-feature">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Mais inclusão
+        </div>
+        <div class="login-feature">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          Mais diversidade
+        </div>
+        <div class="login-feature">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>
+          Mais oportunidades
+        </div>
+      </div>
+    </section>
+
+    <section class="login-right register-right" aria-labelledby="registerTitle">
+      <svg class="login-deco" viewBox="0 0 180 180" fill="none" aria-hidden="true">
+        <circle cx="130" cy="40" r="46" fill="#FF6B2C" opacity="0.28"/>
+        <circle cx="165" cy="80" r="34" fill="#E8541D" opacity="0.28"/>
+        <circle cx="110" cy="90" r="22" fill="#C74312" opacity="0.2"/>
+      </svg>
+      <p class="login-right__badge">ConectaTalentos<br>para sua empresa</p>
+
+      <h1 id="registerTitle">Crie sua conta</h1>
+      <p class="login-right__subtitle">Cadastre sua empresa e comece a encontrar os melhores talentos.</p>
+
+      <form class="login-form register-form" id="registerForm" novalidate>
+        <label class="register-field">
+          <span class="register-field__label">Nome fantasia da empresa</span>
+          <input class="register-input" type="text" name="nomeFantasia" autocomplete="organization" required>
+        </label>
+        <label class="register-field">
+          <span class="register-field__label">Razão social</span>
+          <input class="register-input" type="text" name="razaoSocial" autocomplete="organization" required>
+        </label>
+
+        <div class="register-grid-2">
+          <label class="register-field">
+            <span class="register-field__label">CNPJ</span>
+            <input class="register-input" id="cnpj" type="text" name="cnpj" inputmode="numeric" autocomplete="off" placeholder="00.000.000/0000-00" maxlength="18" required>
+          </label>
+          <label class="register-field">
+            <span class="register-field__label">Telefone</span>
+            <input class="register-input" id="phone" type="tel" name="telefone" inputmode="tel" autocomplete="tel" placeholder="(00) 00000-0000" maxlength="15" required>
+          </label>
+        </div>
+
+        <label class="register-field">
+          <span class="register-field__label">E-mail corporativo</span>
+          <span class="login-field register-icon-field">
+            <span class="login-field__icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 7L2 7"/></svg>
+            </span>
+            <input class="register-input register-input--icon" type="email" name="email" autocomplete="email" required>
+          </span>
+        </label>
+
+        <div class="register-grid-2">
+          <label class="register-field">
+            <span class="register-field__label">Cidade</span>
+            <input class="register-input" type="text" name="cidade" autocomplete="address-level2" required>
+          </label>
+          <label class="register-field">
+            <span class="register-field__label">Estado</span>
+            <select class="register-input register-select" name="estado" autocomplete="address-level1" required>
+              <option value="" selected disabled>UF</option>
+              <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option>
+              <option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option>
+              <option value="GO">GO</option><option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+              <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option><option value="PR">PR</option>
+              <option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option>
+              <option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+              <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="register-grid-2">
+          <label class="register-field">
+            <span class="register-field__label">Senha</span>
+            <span class="login-field register-icon-field">
+              <span class="login-field__icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </span>
+              <input class="register-input register-input--icon register-input--password" id="registerPassword" type="password" name="senha" autocomplete="new-password" minlength="8" required>
+              <button class="login-field__toggle" type="button" data-password-toggle="registerPassword" aria-label="Mostrar senha">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </span>
+          </label>
+          <label class="register-field">
+            <span class="register-field__label">Confirmar senha</span>
+            <span class="login-field register-icon-field">
+              <span class="login-field__icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </span>
+              <input class="register-input register-input--icon register-input--password" id="confirmPassword" type="password" name="confirmarSenha" autocomplete="new-password" minlength="8" required>
+              <button class="login-field__toggle" type="button" data-password-toggle="confirmPassword" aria-label="Mostrar senha">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </span>
+          </label>
+        </div>
+
+        <label class="register-terms">
+          <input type="checkbox" name="termos" required>
+          <span>Li e aceito os <a href="#termos">termos de uso</a></span>
+        </label>
+
+        <p class="register-feedback" id="registerFeedback" role="status" aria-live="polite"></p>
+        <button class="login-submit" type="submit">
+          Criar conta
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </form>
+
+      <div class="login-divider">ou</div>
+      <div class="login-socials">
+        <button class="login-social" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 10.2v3.6h5.1c-.2 1.2-1.5 3.6-5.1 3.6-3.1 0-5.6-2.5-5.6-5.6S8.9 6.2 12 6.2c1.7 0 2.9.7 3.6 1.4l2.4-2.4C16.4 3.6 14.4 2.7 12 2.7 6.9 2.7 2.7 6.9 2.7 12S6.9 21.3 12 21.3c5.4 0 9-3.8 9-9.1 0-.6-.1-1.1-.2-1.6H12z"/><path fill="#4285F4" d="M21 12.2c0-.6-.1-1.1-.2-1.6H12v3.6h5.1"/><path fill="#FBBC05" d="M6.4 14.4A5.57 5.57 0 0 1 6.1 12c0-.8.2-1.6.5-2.4L3.4 7.2A9.27 9.27 0 0 0 2.7 12c0 1.5.4 2.9 1 4.1l2.7-1.7z"/><path fill="#34A853" d="M12 21.3c2.4 0 4.4-.8 5.9-2.1l-2.7-2.1c-.8.5-1.8.9-3.2.9-2.5 0-4.6-1.7-5.3-3.9L3.7 16.1C5.1 19 8.3 21.3 12 21.3z"/></svg>
+          Cadastrar com Google
+        </button>
+        <button class="login-social" type="button">
+          <svg width="18" height="18" viewBox="0 0 23 23"><rect width="10" height="10" fill="#F25022"/><rect x="12" width="10" height="10" fill="#7FBA00"/><rect y="12" width="10" height="10" fill="#00A4EF"/><rect x="12" y="12" width="10" height="10" fill="#FFB900"/></svg>
+          Cadastrar com Microsoft
+        </button>
+      </div>
+
+      <p class="login-signup">
+        Já tem uma conta?
+        <a href="login.html">Fazer login</a>
+      </p>
+    </section>
+  </div>
+
+  <script>
+    const registerForm = document.getElementById('registerForm');
+    const cnpjInput = document.getElementById('cnpj');
+    const phoneInput = document.getElementById('phone');
+    const passwordInput = document.getElementById('registerPassword');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const registerFeedback = document.getElementById('registerFeedback');
+    const registerButton = registerForm.querySelector('[type="submit"]');
+    const registerButtonContent = registerButton.innerHTML;
+
+    function formatCnpj(value) {
+      const digits = value.replace(/\D/g, '').slice(0, 14);
+      return digits
+        .replace(/^(\d{2})(\d)/, '$1.$2')
+        .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+        .replace(/\.(\d{3})(\d)/, '.$1/$2')
+        .replace(/(\d{4})(\d)/, '$1-$2');
+    }
+
+    function formatPhone(value) {
+      const digits = value.replace(/\D/g, '').slice(0, 11);
+      if (digits.length <= 2) return digits ? `(${digits}` : '';
+      if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+      const splitAt = digits.length > 10 ? 7 : 6;
+      return `(${digits.slice(0, 2)}) ${digits.slice(2, splitAt)}-${digits.slice(splitAt)}`;
+    }
+
+    cnpjInput.addEventListener('input', () => {
+      cnpjInput.value = formatCnpj(cnpjInput.value);
+      cnpjInput.setCustomValidity(cnpjInput.value.replace(/\D/g, '').length === 14 ? '' : 'Informe um CNPJ com 14 dígitos.');
+    });
+
+    phoneInput.addEventListener('input', () => {
+      phoneInput.value = formatPhone(phoneInput.value);
+      const digitCount = phoneInput.value.replace(/\D/g, '').length;
+      phoneInput.setCustomValidity(digitCount === 10 || digitCount === 11 ? '' : 'Informe um telefone com DDD.');
+    });
+
+    function validatePasswords() {
+      confirmPasswordInput.setCustomValidity(
+        confirmPasswordInput.value && confirmPasswordInput.value !== passwordInput.value
+          ? 'As senhas não coincidem.'
+          : ''
+      );
+    }
+
+    passwordInput.addEventListener('input', validatePasswords);
+    confirmPasswordInput.addEventListener('input', validatePasswords);
+
+    document.querySelectorAll('[data-password-toggle]').forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        const input = document.getElementById(toggle.dataset.passwordToggle);
+        const showing = input.type === 'password';
+        input.type = showing ? 'text' : 'password';
+        toggle.setAttribute('aria-label', showing ? 'Ocultar senha' : 'Mostrar senha');
+      });
+    });
+
+    registerForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      validatePasswords();
+      if (!registerForm.reportValidity()) return;
+      registerFeedback.hidden = false;
+      registerFeedback.style.color = '';
+      registerFeedback.textContent = 'Enviando cadastro...';
+      registerButton.disabled = true;
+      registerButton.textContent = 'Criando conta...';
+      const form = new FormData(registerForm);
+      const result = await AuthData.registrar({
+        nomeFantasia: form.get('nomeFantasia'),
+        razaoSocial: form.get('razaoSocial'),
+        cnpj: String(form.get('cnpj')).replace(/\D/g, ''),
+        email: form.get('email'),
+        senha: form.get('senha'),
+        telefone: form.get('telefone'),
+        cidade: form.get('cidade'),
+        uf: form.get('estado')
+      });
+      if (result.success) {
+        window.location.href = 'index.html';
+        return;
+      }
+      registerFeedback.style.color = 'var(--color-status-alert)';
+      registerFeedback.textContent = result.message || 'Não foi possível criar a conta. Tente novamente.';
+      registerButton.disabled = false;
+      registerButton.innerHTML = registerButtonContent;
+    });
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="js/animations.js"></script>
+</body>
+</html>
