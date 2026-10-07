@@ -26,7 +26,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _senhaController = TextEditingController();
   bool _senhaVisivel = false;
   bool _carregando = false;
-  bool _recuperandoSenha = false;
 
   @override
   void initState() {
@@ -244,37 +243,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextButton(
-                        onPressed: _carregando || _recuperandoSenha
-                            ? null
-                            : _recuperarSenha,
-                        style: TextButton.styleFrom(
-                          foregroundColor: AppColors.primary,
-                          padding: EdgeInsets.zero,
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: Text(
-                          _recuperandoSenha
-                              ? 'Enviando...'
-                              : 'Esqueci minha senha',
-                          style: AppTextStyles.bodyText.copyWith(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ),
                     const SizedBox(height: 20),
                     PrimaryButton(
                       label: _carregando ? 'Entrando...' : 'Entrar',
                       showArrow: true,
-                      onPressed: _carregando || _recuperandoSenha
-                          ? null
-                          : _login,
+                      onPressed: _carregando ? null : _login,
                     ),
                     const SizedBox(height: 22),
                     Row(
@@ -368,86 +341,6 @@ class _LoginScreenState extends State<LoginScreen> {
         borderSide: const BorderSide(color: AppColors.primary),
       ),
     );
-  }
-
-  Future<void> _recuperarSenha() async {
-    if (_carregando || _recuperandoSenha) return;
-
-    final formKey = GlobalKey<FormState>();
-    var email = _emailController.text.trim();
-    final emailConfirmado = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) {
-        void enviar() {
-          if (formKey.currentState!.validate()) {
-            Navigator.of(dialogContext).pop(email.trim());
-          }
-        }
-
-        return AlertDialog(
-          title: const Text('Recuperar senha'),
-          content: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Informe seu e-mail para receber as instruções de recuperação.',
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  initialValue: email,
-                  autofocus: true,
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.done,
-                  autocorrect: false,
-                  decoration: _decoracaoCampo(
-                    dica: 'E-mail',
-                    icone: Icons.mail_outline_rounded,
-                  ),
-                  onChanged: (value) => email = value,
-                  onFieldSubmitted: (_) => enviar(),
-                  validator: (value) => _emailValido((value ?? '').trim())
-                      ? null
-                      : 'Informe um e-mail válido.',
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancelar'),
-            ),
-            TextButton(onPressed: enviar, child: const Text('Enviar')),
-          ],
-        );
-      },
-    );
-
-    if (emailConfirmado == null || !mounted) return;
-
-    setState(() => _recuperandoSenha = true);
-    try {
-      await _authService.recuperarSenha(email: emailConfirmado);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Se o e-mail estiver cadastrado, você receberá as instruções de recuperação.',
-          ),
-        ),
-      );
-    } on ApiException catch (error) {
-      if (mounted) _mostrarErro(error.message);
-    } on Exception {
-      if (mounted) {
-        _mostrarErro('Não foi possível solicitar a recuperação de senha.');
-      }
-    } finally {
-      if (mounted) setState(() => _recuperandoSenha = false);
-    }
   }
 
   Future<void> _login() async {

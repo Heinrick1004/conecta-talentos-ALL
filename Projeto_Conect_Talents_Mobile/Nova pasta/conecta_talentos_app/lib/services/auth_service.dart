@@ -49,13 +49,6 @@ class AuthService {
     );
   }
 
-  Future<void> recuperarSenha({required String email}) async {
-    await _apiClient.postJson(
-      '/api/auth/candidato/recuperar-senha',
-      body: {'email': email},
-    );
-  }
-
   Future<void> logout() => _tokenStorage.limparSessao();
 
   Future<String?> obterToken() => _tokenStorage.obterToken();

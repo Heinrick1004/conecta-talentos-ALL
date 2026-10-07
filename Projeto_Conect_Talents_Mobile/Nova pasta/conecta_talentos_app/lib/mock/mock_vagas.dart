@@ -68,6 +68,25 @@ class VagaMock {
   final bool jaCandidatado;
   final bool favoritada;
 
+  VagaMock copyWith({bool? jaCandidatado, bool? favoritada}) {
+    return VagaMock(
+      id: id,
+      titulo: titulo,
+      empresa: empresa,
+      local: local,
+      modalidade: modalidade,
+      sigla: sigla,
+      iconeModalidade: iconeModalidade,
+      descricao: descricao,
+      requisitos: requisitos,
+      indiceDestaque: indiceDestaque,
+      dataInicio: dataInicio,
+      dataFim: dataFim,
+      jaCandidatado: jaCandidatado ?? this.jaCandidatado,
+      favoritada: favoritada ?? this.favoritada,
+    );
+  }
+
   static String _stringValue(Object? value) =>
       value is String ? value.trim() : '';
 

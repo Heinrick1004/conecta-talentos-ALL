@@ -158,14 +158,6 @@ void main() {
     expect(find.text('Flutter'), findsOneWidget);
     expect(find.text('Você já se candidatou'), findsOneWidget);
     expect(find.byTooltip('Remover dos interesses'), findsOneWidget);
-
-    await tester.tap(find.byTooltip('Remover dos interesses'));
-    await tester.pump();
-    expect(
-      find.text('Favoritos serão sincronizados na próxima etapa.'),
-      findsOneWidget,
-    );
-    expect(find.text('Você já se candidatou'), findsOneWidget);
   });
 }
 

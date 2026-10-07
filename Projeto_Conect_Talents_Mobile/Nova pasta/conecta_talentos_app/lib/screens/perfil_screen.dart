@@ -4,6 +4,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../mock/mock_perfil.dart';
 import '../mock/mock_usuario.dart';
 import '../services/auth_service.dart';
+import '../services/favoritos_service.dart';
+import '../services/vagas_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/app_bottom_nav_bar.dart';
@@ -20,12 +22,16 @@ class PerfilScreen extends StatelessWidget {
     this.imageUrl,
     this.onNavigationItemSelected,
     this.authService,
+    this.favoritosService,
+    this.vagasService,
     super.key,
   });
 
   final String? imageUrl;
   final ValueChanged<int>? onNavigationItemSelected;
   final AuthService? authService;
+  final FavoritosService? favoritosService;
+  final VagasService? vagasService;
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +129,12 @@ class PerfilScreen extends StatelessWidget {
                       StaggeredListItem(
                         key: ValueKey(mockPerfilMenu[index].titulo),
                         index: index,
-                        child: _ItemMenuPerfil(item: mockPerfilMenu[index]),
+                        child: _ItemMenuPerfil(
+                          item: mockPerfilMenu[index],
+                          authService: authService,
+                          favoritosService: favoritosService,
+                          vagasService: vagasService,
+                        ),
                       ),
                     const SizedBox(height: 4),
                     const _BannerFuturo(),
@@ -300,9 +311,17 @@ class _CardEstatistica extends StatelessWidget {
 }
 
 class _ItemMenuPerfil extends StatefulWidget {
-  const _ItemMenuPerfil({required this.item});
+  const _ItemMenuPerfil({
+    required this.item,
+    this.authService,
+    this.favoritosService,
+    this.vagasService,
+  });
 
   final PerfilMenuMock item;
+  final AuthService? authService;
+  final FavoritosService? favoritosService;
+  final VagasService? vagasService;
 
   @override
   State<_ItemMenuPerfil> createState() => _ItemMenuPerfilState();
@@ -335,7 +354,11 @@ class _ItemMenuPerfilState extends State<_ItemMenuPerfil> {
           } else if (widget.item.titulo == 'Meus interesses') {
             Navigator.of(context).push<void>(
               MaterialPageRoute<void>(
-                builder: (_) => const MeusInteressesScreen(),
+                builder: (_) => MeusInteressesScreen(
+                  authService: widget.authService,
+                  favoritosService: widget.favoritosService,
+                  vagasService: widget.vagasService,
+                ),
               ),
             );
           } else {

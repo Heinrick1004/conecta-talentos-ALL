@@ -3,7 +3,9 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../mock/mock_favoritos.dart';
 import '../mock/mock_vagas.dart';
+import '../services/api_client.dart';
 import '../services/auth_service.dart';
+import '../services/favoritos_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/app_card.dart';
@@ -19,6 +21,7 @@ class DetalhesVagaScreen extends StatefulWidget {
     this.jaCandidatado = false,
     this.authService,
     this.vagasService,
+    this.favoritosService,
     this.onNavigationItemSelected,
     super.key,
   });
@@ -27,6 +30,7 @@ class DetalhesVagaScreen extends StatefulWidget {
   final bool jaCandidatado;
   final AuthService? authService;
   final VagasService? vagasService;
+  final FavoritosService? favoritosService;
   final ValueChanged<int>? onNavigationItemSelected;
 
   @override
@@ -37,6 +41,8 @@ class _DetalhesVagaScreenState extends State<DetalhesVagaScreen> {
   final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
   late VagaMock _vaga;
   late final VagasService _vagasService;
+  late final FavoritosService _favoritosService;
+  bool _alterandoFavorito = false;
 
   bool get _jaCandidatado => _vaga.id != null
       ? _vaga.jaCandidatado
@@ -46,10 +52,64 @@ class _DetalhesVagaScreenState extends State<DetalhesVagaScreen> {
   void initState() {
     super.initState();
     _vaga = widget.vaga;
+    final authService = widget.authService ?? AuthService();
     _vagasService =
-        widget.vagasService ??
-        VagasService(authService: widget.authService ?? AuthService());
+        widget.vagasService ?? VagasService(authService: authService);
+    _favoritosService =
+        widget.favoritosService ?? FavoritosService(authService: authService);
     if (_vaga.id != null) _atualizarVaga();
+  }
+
+  Future<void> _alternarFavorito(bool favorita) async {
+    if (_alterandoFavorito) return;
+
+    final vagaId = _vaga.id;
+    if (vagaId == null) {
+      mockFavoritos.alternar(_vaga);
+      _mostrarMensagem(
+        favorita
+            ? 'Vaga removida dos interesses'
+            : 'Vaga adicionada aos interesses',
+      );
+      return;
+    }
+
+    setState(() => _alterandoFavorito = true);
+    try {
+      if (favorita) {
+        await _favoritosService.removerFavorito(vagaId);
+      } else {
+        await _favoritosService.adicionarFavorito(vagaId);
+      }
+      if (!mounted) return;
+      setState(() => _vaga = _vaga.copyWith(favoritada: !favorita));
+      _mostrarMensagem(
+        favorita
+            ? 'Vaga removida dos interesses'
+            : 'Vaga adicionada aos interesses',
+      );
+    } on ApiException catch (error) {
+      if (!mounted) return;
+      _mostrarMensagem(
+        error.statusCode == 401
+            ? error.message
+            : 'Não foi possível atualizar seus interesses.',
+      );
+    } on Exception catch (error) {
+      debugPrint('Falha ao atualizar favorito: $error');
+      if (!mounted) return;
+      _mostrarMensagem('Não foi possível atualizar seus interesses.');
+    } finally {
+      if (mounted) setState(() => _alterandoFavorito = false);
+    }
+  }
+
+  void _mostrarMensagem(String mensagem) {
+    _scaffoldMessengerKey.currentState!
+      ..removeCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(content: Text(mensagem), duration: const Duration(seconds: 2)),
+      );
   }
 
   Future<void> _atualizarVaga() async {
@@ -102,35 +162,9 @@ class _DetalhesVagaScreenState extends State<DetalhesVagaScreen> {
                           tooltip: favorita
                               ? 'Remover dos interesses'
                               : 'Adicionar aos interesses',
-                          onPressed: () {
-                            if (_vaga.id != null) {
-                              _scaffoldMessengerKey.currentState!
-                                ..removeCurrentSnackBar()
-                                ..showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Favoritos serão sincronizados na próxima etapa.',
-                                    ),
-                                    duration: Duration(seconds: 2),
-                                  ),
-                                );
-                              return;
-                            }
-
-                            mockFavoritos.alternar(_vaga);
-                            _scaffoldMessengerKey.currentState!
-                              ..removeCurrentSnackBar()
-                              ..showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    favorita
-                                        ? 'Vaga removida dos interesses'
-                                        : 'Vaga adicionada aos interesses',
-                                  ),
-                                  duration: const Duration(seconds: 2),
-                                ),
-                              );
-                          },
+                          onPressed: _alterandoFavorito
+                              ? null
+                              : () => _alternarFavorito(favorita),
                           icon: Icon(
                             favorita
                                 ? Icons.bookmark_rounded

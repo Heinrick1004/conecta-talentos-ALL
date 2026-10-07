@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../mock/mock_vagas.dart';
 import '../services/api_client.dart';
 import '../services/auth_service.dart';
+import '../services/favoritos_service.dart';
 import '../services/vagas_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
@@ -18,12 +19,14 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({
     required this.authService,
     this.vagasService,
+    this.favoritosService,
     this.onNavigationItemSelected,
     super.key,
   });
 
   final AuthService authService;
   final VagasService? vagasService;
+  final FavoritosService? favoritosService;
   final ValueChanged<int>? onNavigationItemSelected;
 
   @override
@@ -234,6 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             vaga: vagasFiltradas[index],
                             authService: widget.authService,
                             vagasService: _vagasService,
+                            favoritosService: widget.favoritosService,
                             onNavigationItemSelected:
                                 widget.onNavigationItemSelected,
                             corDestaque:
@@ -334,6 +338,7 @@ class _CardVaga extends StatelessWidget {
     required this.corDestaque,
     required this.authService,
     required this.vagasService,
+    this.favoritosService,
     this.onNavigationItemSelected,
   });
 
@@ -341,6 +346,7 @@ class _CardVaga extends StatelessWidget {
   final Color corDestaque;
   final AuthService authService;
   final VagasService vagasService;
+  final FavoritosService? favoritosService;
   final ValueChanged<int>? onNavigationItemSelected;
 
   @override
@@ -401,6 +407,7 @@ class _CardVaga extends StatelessWidget {
                             vaga: vaga,
                             authService: authService,
                             vagasService: vagasService,
+                            favoritosService: favoritosService,
                             onNavigationItemSelected: onNavigationItemSelected,
                           ),
                         ),

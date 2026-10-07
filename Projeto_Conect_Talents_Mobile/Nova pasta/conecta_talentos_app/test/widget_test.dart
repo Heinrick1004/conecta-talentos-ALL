@@ -19,6 +19,7 @@ import 'package:conecta_talentos_app/screens/main_navigation_screen.dart';
 import 'package:conecta_talentos_app/models/auth_models.dart';
 import 'package:conecta_talentos_app/services/api_client.dart';
 import 'package:conecta_talentos_app/services/auth_service.dart';
+import 'package:conecta_talentos_app/services/favoritos_service.dart';
 import 'package:conecta_talentos_app/services/token_storage.dart';
 import 'package:conecta_talentos_app/services/vagas_service.dart';
 import 'package:conecta_talentos_app/theme/app_colors.dart';
@@ -318,6 +319,7 @@ void main() {
         home: MainNavigationScreen(
           authService: _FakeAuthService(),
           vagasService: _MockHomeVagasService(),
+          favoritosService: _MockFavoritosService(),
         ),
       ),
     );
@@ -589,4 +591,11 @@ class _MockHomeVagasService extends VagasService {
     String? cidade,
     String? modalidade,
   }) async => mockVagas;
+}
+
+class _MockFavoritosService extends FavoritosService {
+  _MockFavoritosService() : super(authService: _FakeAuthService());
+
+  @override
+  Future<List<VagaMock>> listarFavoritos() async => mockFavoritos.vagas;
 }

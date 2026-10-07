@@ -14,7 +14,7 @@ class MockFavoritos extends ChangeNotifier {
   void adicionar(VagaMock vaga) {
     if (contem(vaga)) return;
     _vagas.add(vaga);
-    // TODO: substituir favoritos mockados pela persistência via API/banco.
+    // TODO: remover o fallback quando candidaturas também usarem IDs da API.
     notifyListeners();
   }
 
@@ -22,7 +22,7 @@ class MockFavoritos extends ChangeNotifier {
     final index = _vagas.indexWhere((favorita) => _mesmaVaga(favorita, vaga));
     if (index < 0) return;
     _vagas.removeAt(index);
-    // TODO: substituir favoritos mockados pela persistência via API/banco.
+    // TODO: remover o fallback quando candidaturas também usarem IDs da API.
     notifyListeners();
   }
 
