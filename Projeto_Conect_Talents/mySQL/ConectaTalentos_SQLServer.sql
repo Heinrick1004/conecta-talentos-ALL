@@ -113,11 +113,42 @@ CREATE TABLE dbo.Notificacao
 );
 GO
 
+/*
+    Favorito: relaciona candidatos às vagas que foram salvas
+    na área "Meus interesses" do aplicativo mobile.
+*/
+CREATE TABLE dbo.Favorito
+(
+    Id              INT IDENTITY(1,1) NOT NULL,
+    CandidatoId     INT NOT NULL,
+    VagaId          INT NOT NULL,
+    CriadoEm        DATETIME NOT NULL
+        CONSTRAINT DF_Favorito_CriadoEm DEFAULT (GETDATE()),
+
+    CONSTRAINT PK_Favorito PRIMARY KEY (Id),
+
+    CONSTRAINT UQ_Favorito_Candidato_Vaga
+        UNIQUE (CandidatoId, VagaId),
+
+    CONSTRAINT FK_Favorito_Candidato
+        FOREIGN KEY (CandidatoId)
+        REFERENCES dbo.Candidato (Id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT FK_Favorito_Vaga
+        FOREIGN KEY (VagaId)
+        REFERENCES dbo.Vaga (Id)
+        ON DELETE CASCADE
+);
+GO
+
 /* Indices para as consultas mais frequentes por empresa, vaga, candidato e caixa de notificacoes. */
 CREATE INDEX IX_Vaga_EmpresaId ON dbo.Vaga (EmpresaId);
 CREATE INDEX IX_Candidatura_VagaId ON dbo.Candidatura (VagaId);
 CREATE INDEX IX_Candidatura_CandidatoId ON dbo.Candidatura (CandidatoId);
 CREATE INDEX IX_Notificacao_CandidatoId ON dbo.Notificacao (CandidatoId);
+CREATE INDEX IX_Favorito_VagaId
+    ON dbo.Favorito (VagaId);
 GO
 
 /* Atualiza o marcador de sincronizacao sempre que uma vaga for alterada. */
