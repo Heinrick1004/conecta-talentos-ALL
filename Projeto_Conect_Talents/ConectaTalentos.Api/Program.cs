@@ -83,6 +83,11 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+var configuredUrls = builder.Configuration["urls"];
+var hasHttpsEndpoint = configuredUrls?
+    .Split(';', StringSplitOptions.RemoveEmptyEntries)
+    .Any(url => Uri.TryCreate(url, UriKind.Absolute, out var uri)
+        && uri.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) == true;
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 if (app.Environment.IsDevelopment())
@@ -91,7 +96,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+if (hasHttpsEndpoint)
+{
+    app.UseHttpsRedirection();
+}
 app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();

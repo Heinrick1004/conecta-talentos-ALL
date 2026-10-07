@@ -1,7 +1,7 @@
 (function () {
   const TOKEN_KEY = 'conectatalentos_token';
   const COMPANY_KEY = 'conectatalentos_empresa';
-  window.API_BASE_URL = window.API_BASE_URL || 'https://localhost:7000/api';
+  window.API_BASE_URL = window.API_BASE_URL || 'http://localhost:5000/api';
 
   function saveSession(response) {
     if (!response || !response.token || !response.empresa) {

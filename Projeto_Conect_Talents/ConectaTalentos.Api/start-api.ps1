@@ -2,7 +2,7 @@ $ErrorActionPreference = 'Stop'
 
 $apiProcessName = 'ConectaTalentos.Api'
 $apiPorts = @(5000, 7000)
-$swaggerUrl = 'https://localhost:7000/swagger'
+$swaggerUrl = 'http://localhost:5000/swagger'
 
 try {
     # Localiza listeners nas portas da API e filtra pelo nome exato do processo.
@@ -52,11 +52,11 @@ try {
         Start-Sleep -Seconds 2
     }
 
-    # Inicia a API usando o perfil HTTPS e o arquivo de projeto ao lado deste script.
-    Write-Host 'Iniciando ConectaTalentos API em https://localhost:7000 ...' -ForegroundColor Cyan
+    # Inicia a API usando o perfil HTTP local e o projeto ao lado deste script.
+    Write-Host 'Iniciando ConectaTalentos API em http://localhost:5000 ...' -ForegroundColor Cyan
     Push-Location -LiteralPath $PSScriptRoot
     try {
-        & dotnet run --launch-profile https --project '.\ConectaTalentos.Api.csproj' 2>&1 |
+        & dotnet run --launch-profile http --project '.\ConectaTalentos.Api.csproj' 2>&1 |
             Tee-Object -Variable runOutput
         $dotnetExitCode = $LASTEXITCODE
     }
