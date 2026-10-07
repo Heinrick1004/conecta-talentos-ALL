@@ -1,5 +1,9 @@
-﻿import 'package:flutter/material.dart';
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 
 import 'package:conecta_talentos_app/main.dart';
 import 'package:conecta_talentos_app/mock/mock_favoritos.dart';
@@ -11,10 +15,125 @@ import 'package:conecta_talentos_app/screens/detalhes_candidatura_screen.dart';
 import 'package:conecta_talentos_app/screens/detalhes_vaga_screen.dart';
 import 'package:conecta_talentos_app/screens/login_screen.dart';
 import 'package:conecta_talentos_app/screens/meus_interesses_screen.dart';
+import 'package:conecta_talentos_app/models/auth_models.dart';
+import 'package:conecta_talentos_app/services/api_client.dart';
+import 'package:conecta_talentos_app/services/auth_service.dart';
+import 'package:conecta_talentos_app/services/token_storage.dart';
 import 'package:conecta_talentos_app/theme/app_colors.dart';
 import 'package:conecta_talentos_app/theme/app_theme.dart';
 
 void main() {
+  test('sessão rejeita e apaga token expirado ou malformado', () async {
+    final storage = _MemorySessionStorage()
+      ..token = 'header.${_jwtPayload({'exp': 1})}.signature';
+    final authService = AuthService(
+      apiClient: ApiClient(
+        client: MockClient((_) async => http.Response('{}', 200)),
+      ),
+      tokenStorage: storage,
+    );
+
+    expect(await authService.possuiSessaoValida(), isFalse);
+    expect(storage.token, isNull);
+
+    storage.token = 'token-malformado';
+    expect(await authService.possuiSessaoValida(), isFalse);
+    expect(storage.token, isNull);
+  });
+
+  test('sessão restaura token com expiração futura', () async {
+    final exp =
+        DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch ~/
+        1000;
+    final storage = _MemorySessionStorage()
+      ..token = 'header.${_jwtPayload({'exp': exp})}.signature';
+    final authService = AuthService(
+      apiClient: ApiClient(
+        client: MockClient((_) async => http.Response('{}', 200)),
+      ),
+      tokenStorage: storage,
+    );
+
+    expect(await authService.possuiSessaoValida(), isTrue);
+    expect(storage.token, isNotNull);
+  });
+
+  test('login chama endpoint candidato e persiste somente o JWT', () async {
+    final storage = _MemorySessionStorage();
+    Map<String, dynamic>? requestBody;
+    final authService = AuthService(
+      apiClient: ApiClient(
+        client: MockClient((request) async {
+          expect(request.url.path, '/api/auth/candidato/login');
+          expect(request.headers['content-type'], 'application/json');
+          requestBody = jsonDecode(request.body) as Map<String, dynamic>;
+          return http.Response(
+            jsonEncode({
+              'token': 'header.payload.signature',
+              'candidato': {
+                'id': 12,
+                'nomeCompleto': 'Candidato Teste',
+                'email': 'teste@example.com',
+              },
+            }),
+            200,
+          );
+        }),
+      ),
+      tokenStorage: storage,
+    );
+
+    final result = await authService.login(
+      email: 'teste@example.com',
+      senha: 'senha-secreta',
+    );
+
+    expect(requestBody, {
+      'email': 'teste@example.com',
+      'senha': 'senha-secreta',
+    });
+    expect(result.candidato.id, 12);
+    expect(storage.token, 'header.payload.signature');
+  });
+
+  test('cadastro não armazena o token devolvido pela API', () async {
+    final storage = _MemorySessionStorage();
+    Map<String, dynamic>? requestBody;
+    final authService = AuthService(
+      apiClient: ApiClient(
+        client: MockClient((request) async {
+          expect(request.url.path, '/api/auth/candidato/registrar');
+          requestBody = jsonDecode(request.body) as Map<String, dynamic>;
+          return http.Response(
+            jsonEncode({
+              'token': 'token-de-cadastro',
+              'candidato': {
+                'id': 13,
+                'nomeCompleto': 'Nova Pessoa',
+                'email': 'nova@example.com',
+              },
+            }),
+            201,
+          );
+        }),
+      ),
+      tokenStorage: storage,
+    );
+
+    await authService.registrar(
+      nomeCompleto: 'Nova Pessoa',
+      email: 'nova@example.com',
+      senha: 'senha-secreta',
+    );
+
+    expect(requestBody, {
+      'nomeCompleto': 'Nova Pessoa',
+      'email': 'nova@example.com',
+      'senha': 'senha-secreta',
+    });
+    expect(storage.token, isNull);
+  });
+
   test(
     'favoritos impedem duplicação e permitem remover e adicionar novamente',
     () {
@@ -51,8 +170,8 @@ void main() {
   );
 
   testWidgets('aplicativo inicia em LoginScreen', (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp());
-    await tester.pump(const Duration(milliseconds: 350));
+    await tester.pumpWidget(MyApp(authService: _FakeAuthService()));
+    await tester.pumpAndSettle();
 
     final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
     expect(app.title, 'ConectaTalentos');
@@ -64,7 +183,10 @@ void main() {
 
   testWidgets('login vazio permanece no Login', (WidgetTester tester) async {
     await tester.pumpWidget(
-      MaterialApp(theme: AppTheme.light, home: const LoginScreen()),
+      MaterialApp(
+        theme: AppTheme.light,
+        home: LoginScreen(authService: _FakeAuthService()),
+      ),
     );
     await tester.pump();
 
@@ -82,7 +204,10 @@ void main() {
 
   testWidgets('login preenchido entra na Home', (WidgetTester tester) async {
     await tester.pumpWidget(
-      MaterialApp(theme: AppTheme.light, home: const LoginScreen()),
+      MaterialApp(
+        theme: AppTheme.light,
+        home: LoginScreen(authService: _FakeAuthService()),
+      ),
     );
     await tester.pump();
 
@@ -100,7 +225,10 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
-      MaterialApp(theme: AppTheme.light, home: const LoginScreen()),
+      MaterialApp(
+        theme: AppTheme.light,
+        home: LoginScreen(authService: _FakeAuthService()),
+      ),
     );
     await tester.pump();
 
@@ -130,7 +258,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(MyApp(authService: _FakeAuthService()));
     await tester.pump(const Duration(milliseconds: 700));
     await tester.enterText(find.byType(TextField).at(0), 'teste@teste.com');
     await tester.enterText(find.byType(TextField).at(1), '123456');
@@ -182,7 +310,7 @@ void main() {
       mockFavoritos.alternar(vaga);
     }
 
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(MyApp(authService: _FakeAuthService()));
     await tester.pump(const Duration(milliseconds: 700));
     await tester.enterText(find.byType(TextField).at(0), 'teste@teste.com');
     await tester.enterText(find.byType(TextField).at(1), '123456');
@@ -341,4 +469,108 @@ void main() {
 
     expect(find.text('Confirmar candidatura'), findsOneWidget);
   });
+
+  testWidgets('cadastro rejeita dados inválidos sem chamar a API', (
+    WidgetTester tester,
+  ) async {
+    final authService = _FakeAuthService();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: CadastroScreen(authService: authService),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField).at(0), 'Candidato Teste');
+    await tester.enterText(find.byType(TextField).at(1), 'invalid-email');
+    await tester.enterText(find.byType(TextField).at(2), 'short');
+    await tester.enterText(find.byType(TextField).at(3), 'different');
+    await tester.tap(find.text('Criar conta'));
+    await tester.pump();
+
+    expect(find.text('Informe um e-mail válido.'), findsOneWidget);
+    expect(authService.registrationCalls, 0);
+    expect(find.byType(CadastroScreen), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField).at(1), 'teste@example.com');
+    await tester.enterText(find.byType(TextField).at(2), 'short');
+    await tester.enterText(find.byType(TextField).at(3), 'short');
+    await tester.tap(find.text('Criar conta'));
+    await tester.pump();
+    expect(
+      find.text('A senha deve ter pelo menos 8 caracteres.'),
+      findsOneWidget,
+    );
+    expect(authService.registrationCalls, 0);
+
+    await tester.enterText(find.byType(TextField).at(2), 'senha-valida-123');
+    await tester.enterText(find.byType(TextField).at(3), 'outra-senha-456');
+    await tester.tap(find.text('Criar conta'));
+    await tester.pump();
+    expect(find.text('As senhas não coincidem.'), findsOneWidget);
+    expect(authService.registrationCalls, 0);
+  });
+}
+
+String _jwtPayload(Map<String, Object> payload) {
+  return base64Url.encode(utf8.encode(jsonEncode(payload))).replaceAll('=', '');
+}
+
+class _FakeAuthService extends AuthService {
+  _FakeAuthService()
+    : super(
+        apiClient: ApiClient(
+          client: MockClient((_) async => http.Response('{}', 200)),
+        ),
+        tokenStorage: _MemorySessionStorage(),
+      );
+  int registrationCalls = 0;
+
+  @override
+  Future<AuthResponse> login({
+    required String email,
+    required String senha,
+  }) async {
+    return const AuthResponse(
+      token: 'header.payload.signature',
+      candidato: CandidatoAuth(
+        id: 1,
+        nomeCompleto: 'Candidato Teste',
+        email: 'teste@teste.com',
+      ),
+    );
+  }
+
+  @override
+  Future<void> registrar({
+    required String nomeCompleto,
+    required String email,
+    required String senha,
+  }) async {
+    registrationCalls++;
+  }
+
+  @override
+  Future<void> logout() async {}
+
+  @override
+  Future<bool> possuiSessaoValida() async => false;
+}
+
+class _MemorySessionStorage implements SessionStorage {
+  String? token;
+
+  @override
+  Future<void> limparSessao() async {
+    token = null;
+  }
+
+  @override
+  Future<String?> obterToken() async => token;
+
+  @override
+  Future<void> salvarSessao(AuthResponse response) async {
+    token = response.token;
+  }
 }

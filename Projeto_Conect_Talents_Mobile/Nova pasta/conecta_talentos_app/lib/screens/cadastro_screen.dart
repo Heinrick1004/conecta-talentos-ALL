@@ -3,19 +3,24 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../services/api_client.dart';
+import '../services/auth_service.dart';
 import '../widgets/app_card.dart';
 import '../widgets/icon_avatar_box.dart';
 import '../widgets/primary_button.dart';
 
 /// Formulário de criação de conta para novos candidatos.
 class CadastroScreen extends StatefulWidget {
-  const CadastroScreen({super.key});
+  const CadastroScreen({this.authService, super.key});
+
+  final AuthService? authService;
 
   @override
   State<CadastroScreen> createState() => _CadastroScreenState();
 }
 
 class _CadastroScreenState extends State<CadastroScreen> {
+  late final AuthService _authService;
   final _nomeController = TextEditingController();
   final _emailController = TextEditingController();
   final _senhaController = TextEditingController();
@@ -23,7 +28,14 @@ class _CadastroScreenState extends State<CadastroScreen> {
 
   bool _senhaVisivel = false;
   bool _confirmarSenhaVisivel = false;
+  bool _carregando = false;
   String? _erroValidacao;
+
+  @override
+  void initState() {
+    super.initState();
+    _authService = widget.authService ?? AuthService();
+  }
 
   @override
   void dispose() {
@@ -193,9 +205,11 @@ class _CadastroScreenState extends State<CadastroScreen> {
                             ],
                             const SizedBox(height: 18),
                             PrimaryButton(
-                              label: 'Criar conta',
+                              label: _carregando
+                                  ? 'Criando conta...'
+                                  : 'Criar conta',
                               showArrow: true,
-                              onPressed: _validarCadastro,
+                              onPressed: _carregando ? null : _validarCadastro,
                             ),
                           ],
                         ),
@@ -306,28 +320,64 @@ class _CadastroScreenState extends State<CadastroScreen> {
     }
   }
 
-  void _validarCadastro() {
-    final camposObrigatoriosPreenchidos =
-        _nomeController.text.trim().isNotEmpty &&
-        _emailController.text.trim().isNotEmpty &&
-        _senhaController.text.isNotEmpty &&
-        _confirmarSenhaController.text.isNotEmpty;
+  Future<void> _validarCadastro() async {
+    final nome = _nomeController.text.trim();
+    final email = _emailController.text.trim();
+    final senha = _senhaController.text;
+    final confirmarSenha = _confirmarSenhaController.text;
 
-    if (!camposObrigatoriosPreenchidos) {
-      setState(() => _erroValidacao = 'Preencha todos os campos obrigatórios.');
+    if (nome.isEmpty ||
+        email.isEmpty ||
+        senha.isEmpty ||
+        confirmarSenha.isEmpty) {
+      _mostrarErroValidacao('Preencha todos os campos obrigatórios.');
       return;
     }
 
-    if (_senhaController.text != _confirmarSenhaController.text) {
-      setState(() => _erroValidacao = 'As senhas não coincidem.');
+    if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email)) {
+      _mostrarErroValidacao('Informe um e-mail válido.');
       return;
     }
 
-    setState(() => _erroValidacao = null);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Conta criada com sucesso!')),
-    );
-    Navigator.of(context).pop();
-    // TODO: integrar com AuthController / API de registro de candidato.
+    if (senha.length < 8) {
+      _mostrarErroValidacao('A senha deve ter pelo menos 8 caracteres.');
+      return;
+    }
+
+    if (senha != confirmarSenha) {
+      _mostrarErroValidacao('As senhas não coincidem.');
+      return;
+    }
+
+    setState(() {
+      _erroValidacao = null;
+      _carregando = true;
+    });
+    try {
+      await _authService.registrar(
+        nomeCompleto: nome,
+        email: email,
+        senha: senha,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Conta criada com sucesso! Faça login para continuar.'),
+        ),
+      );
+      Navigator.of(context).pop();
+    } on ApiException catch (error) {
+      if (mounted) _mostrarErroValidacao(error.message);
+    } on Exception {
+      if (mounted) {
+        _mostrarErroValidacao('Não foi possível concluir a operação.');
+      }
+    } finally {
+      if (mounted) setState(() => _carregando = false);
+    }
+  }
+
+  void _mostrarErroValidacao(String mensagem) {
+    setState(() => _erroValidacao = mensagem);
   }
 }

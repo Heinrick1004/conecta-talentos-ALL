@@ -3,6 +3,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import 'cadastro_screen.dart';
 import 'main_navigation_screen.dart';
+import '../services/api_client.dart';
+import '../services/auth_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/icon_avatar_box.dart';
@@ -10,16 +12,26 @@ import '../widgets/primary_button.dart';
 
 /// Tela de autenticação para usuários ainda não autenticados.
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({this.authService, super.key});
+
+  final AuthService? authService;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  late final AuthService _authService;
   final _emailController = TextEditingController();
   final _senhaController = TextEditingController();
   bool _senhaVisivel = false;
+  bool _carregando = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _authService = widget.authService ?? AuthService();
+  }
 
   @override
   void dispose() {
@@ -255,9 +267,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 20),
                     PrimaryButton(
-                      label: 'Entrar',
+                      label: _carregando ? 'Entrando...' : 'Entrar',
                       showArrow: true,
-                      onPressed: _loginMockado,
+                      onPressed: _carregando ? null : _login,
                     ),
                     const SizedBox(height: 22),
                     Row(
@@ -292,7 +304,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             Navigator.push<void>(
                               context,
                               MaterialPageRoute<void>(
-                                builder: (_) => const CadastroScreen(),
+                                builder: (_) =>
+                                    CadastroScreen(authService: _authService),
                               ),
                             );
                           },
@@ -352,22 +365,44 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void _loginMockado() {
+  Future<void> _login() async {
     final email = _emailController.text.trim();
-    final senha = _senhaController.text.trim();
+    final senha = _senhaController.text;
 
     if (email.isEmpty || senha.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Informe seu e-mail e senha para continuar.'),
-        ),
-      );
+      _mostrarErro('Informe seu e-mail e senha para continuar.');
       return;
     }
 
-    // TODO: substituir autenticação mock pela API REST posteriormente.
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute<void>(builder: (_) => const MainNavigationScreen()),
-    );
+    if (!_emailValido(email)) {
+      _mostrarErro('Informe um e-mail válido.');
+      return;
+    }
+
+    setState(() => _carregando = true);
+    try {
+      await _authService.login(email: email, senha: senha);
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute<void>(
+          builder: (_) => MainNavigationScreen(authService: _authService),
+        ),
+      );
+    } on ApiException catch (error) {
+      if (mounted) _mostrarErro(error.message);
+    } on Exception {
+      if (mounted) _mostrarErro('Não foi possível concluir a operação.');
+    } finally {
+      if (mounted) setState(() => _carregando = false);
+    }
+  }
+
+  void _mostrarErro(String mensagem) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(mensagem)));
+  }
+
+  bool _emailValido(String email) {
+    return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email);
   }
 }

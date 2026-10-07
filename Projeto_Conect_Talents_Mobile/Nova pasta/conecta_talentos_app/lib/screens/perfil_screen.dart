@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../mock/mock_perfil.dart';
 import '../mock/mock_usuario.dart';
+import '../services/auth_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/app_bottom_nav_bar.dart';
@@ -15,10 +16,16 @@ import 'meus_interesses_screen.dart';
 
 /// Tela de perfil do candidato.
 class PerfilScreen extends StatelessWidget {
-  const PerfilScreen({this.imageUrl, this.onNavigationItemSelected, super.key});
+  const PerfilScreen({
+    this.imageUrl,
+    this.onNavigationItemSelected,
+    this.authService,
+    super.key,
+  });
 
   final String? imageUrl;
   final ValueChanged<int>? onNavigationItemSelected;
+  final AuthService? authService;
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +133,10 @@ class PerfilScreen extends StatelessWidget {
                       child: SizedBox(
                         width: double.infinity,
                         child: TextButton.icon(
-                          onPressed: () => _confirmarSaida(context),
+                          onPressed: () => _confirmarSaida(
+                            context,
+                            authService ?? AuthService(),
+                          ),
                           style: TextButton.styleFrom(
                             alignment: Alignment.centerLeft,
                             foregroundColor: AppColors.danger,
@@ -160,7 +170,10 @@ class PerfilScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _confirmarSaida(BuildContext context) async {
+  Future<void> _confirmarSaida(
+    BuildContext context,
+    AuthService authService,
+  ) async {
     final confirmarSaida = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -182,9 +195,20 @@ class PerfilScreen extends StatelessWidget {
 
     if (confirmarSaida != true || !context.mounted) return;
 
-    // TODO: ao integrar a API, remover token/sessão persistida durante o logout.
+    try {
+      await authService.logout();
+    } on Exception {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Não foi possível encerrar a sessão.')),
+      );
+      return;
+    }
+    if (!context.mounted) return;
     Navigator.of(context).pushAndRemoveUntil<void>(
-      MaterialPageRoute<void>(builder: (_) => const LoginScreen()),
+      MaterialPageRoute<void>(
+        builder: (_) => LoginScreen(authService: authService),
+      ),
       (route) => false,
     );
   }
