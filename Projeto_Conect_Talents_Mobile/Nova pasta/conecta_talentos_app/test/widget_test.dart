@@ -15,10 +15,12 @@ import 'package:conecta_talentos_app/screens/detalhes_candidatura_screen.dart';
 import 'package:conecta_talentos_app/screens/detalhes_vaga_screen.dart';
 import 'package:conecta_talentos_app/screens/login_screen.dart';
 import 'package:conecta_talentos_app/screens/meus_interesses_screen.dart';
+import 'package:conecta_talentos_app/screens/main_navigation_screen.dart';
 import 'package:conecta_talentos_app/models/auth_models.dart';
 import 'package:conecta_talentos_app/services/api_client.dart';
 import 'package:conecta_talentos_app/services/auth_service.dart';
 import 'package:conecta_talentos_app/services/token_storage.dart';
+import 'package:conecta_talentos_app/services/vagas_service.dart';
 import 'package:conecta_talentos_app/theme/app_colors.dart';
 import 'package:conecta_talentos_app/theme/app_theme.dart';
 
@@ -310,13 +312,17 @@ void main() {
       mockFavoritos.alternar(vaga);
     }
 
-    await tester.pumpWidget(MyApp(authService: _FakeAuthService()));
-    await tester.pump(const Duration(milliseconds: 700));
-    await tester.enterText(find.byType(TextField).at(0), 'teste@teste.com');
-    await tester.enterText(find.byType(TextField).at(1), '123456');
-    await tester.tap(find.text('Entrar'));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: MainNavigationScreen(
+          authService: _FakeAuthService(),
+          vagasService: _MockHomeVagasService(),
+        ),
+      ),
+    );
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 350));
+    await tester.pump(const Duration(milliseconds: 700));
 
     final abrirDetalhes = find.byTooltip('Ver vaga: Desenvolvedor .NET');
     await tester.ensureVisible(abrirDetalhes);
@@ -573,4 +579,14 @@ class _MemorySessionStorage implements SessionStorage {
   Future<void> salvarSessao(AuthResponse response) async {
     token = response.token;
   }
+}
+
+class _MockHomeVagasService extends VagasService {
+  _MockHomeVagasService() : super(authService: _FakeAuthService());
+
+  @override
+  Future<List<VagaMock>> listarVagas({
+    String? cidade,
+    String? modalidade,
+  }) async => mockVagas;
 }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../mock/mock_vagas.dart';
+import '../services/api_client.dart';
+import '../services/auth_service.dart';
+import '../services/vagas_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/app_bottom_nav_bar.dart';
@@ -11,13 +14,104 @@ import '../widgets/staggered_list_item.dart';
 import 'detalhes_vaga_screen.dart';
 
 /// Página inicial com uma saudação e vagas recomendadas.
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({this.onNavigationItemSelected, super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({
+    required this.authService,
+    this.vagasService,
+    this.onNavigationItemSelected,
+    super.key,
+  });
 
+  final AuthService authService;
+  final VagasService? vagasService;
   final ValueChanged<int>? onNavigationItemSelected;
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late final VagasService _vagasService;
+  final _buscaController = TextEditingController();
+  List<VagaMock> _vagas = [];
+  String _busca = '';
+  String? _erro;
+  bool _carregando = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _vagasService =
+        widget.vagasService ?? VagasService(authService: widget.authService);
+    _carregarVagas();
+  }
+
+  @override
+  void dispose() {
+    _buscaController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _carregarVagas() async {
+    setState(() {
+      _carregando = true;
+      _erro = null;
+    });
+
+    try {
+      final vagas = await _vagasService.listarVagas();
+      if (!mounted) return;
+      setState(() {
+        _vagas = vagas;
+        _carregando = false;
+      });
+    } on ApiException catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _erro = error.statusCode == 401
+            ? error.message
+            : 'Não foi possível carregar as vagas.';
+        _carregando = false;
+      });
+    } on Exception catch (error) {
+      debugPrint('Falha ao carregar vagas: $error');
+      if (!mounted) return;
+      setState(() {
+        _erro = 'Não foi possível carregar as vagas.';
+        _carregando = false;
+      });
+    }
+  }
+
+  List<VagaMock> get _vagasFiltradas {
+    final busca = _buscarNormalizado(_busca);
+    if (busca.isEmpty) return _vagas;
+    return _vagas
+        .where((vaga) {
+          final campos = [
+            vaga.titulo,
+            vaga.empresa,
+            vaga.local,
+            vaga.modalidade,
+          ];
+          return campos.any(
+            (campo) => _buscarNormalizado(campo).contains(busca),
+          );
+        })
+        .toList(growable: false);
+  }
+
+  String _buscarNormalizado(String valor) => valor.trim().toLowerCase();
+
+  void _limparBusca() {
+    _buscaController.clear();
+    setState(() => _busca = '');
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final vagasFiltradas = _vagasFiltradas;
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -27,69 +121,129 @@ class HomeScreen extends StatelessWidget {
               hasUnreadNotifications: true,
             ),
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-                children: [
-                  Text('Olá, Guilherme 👋', style: AppTextStyles.displayTitle),
-                  const SizedBox(height: 5),
-                  Text(
-                    'Que bom ter você por aqui!',
-                    style: AppTextStyles.bodyText.copyWith(
-                      color: AppColors.neutral600,
+              child: RefreshIndicator(
+                color: AppColors.primary,
+                onRefresh: _carregarVagas,
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                  children: [
+                    Text(
+                      'Olá, Guilherme 👋',
+                      style: AppTextStyles.displayTitle,
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  const _CampoBusca(),
-                  const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'Vagas para você',
-                          style: AppTextStyles.sectionTitle,
-                        ),
+                    const SizedBox(height: 5),
+                    Text(
+                      'Que bom ter você por aqui!',
+                      style: AppTextStyles.bodyText.copyWith(
+                        color: AppColors.neutral600,
                       ),
-                      TextButton(
-                        onPressed: () {
-                          // TODO: abrir a lista completa de vagas.
-                        },
-                        style: TextButton.styleFrom(
-                          foregroundColor: AppColors.primary,
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          minimumSize: const Size(0, 40),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    const SizedBox(height: 20),
+                    _CampoBusca(
+                      controller: _buscaController,
+                      onChanged: (value) => setState(() => _busca = value),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Vagas para você',
+                            style: AppTextStyles.sectionTitle,
+                          ),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                        TextButton(
+                          onPressed: _limparBusca,
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.primary,
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            minimumSize: const Size(0, 40),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Ver todas',
+                                style: AppTextStyles.bodyText.copyWith(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(width: 3),
+                              const Icon(Icons.arrow_forward_rounded, size: 16),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    if (_carregando)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 40),
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      )
+                    else if (_erro != null)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 24),
+                        child: Column(
                           children: [
                             Text(
-                              'Ver todas',
+                              _erro!,
+                              textAlign: TextAlign.center,
                               style: AppTextStyles.bodyText.copyWith(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.w700,
+                                color: AppColors.neutral600,
                               ),
                             ),
-                            const SizedBox(width: 3),
-                            const Icon(Icons.arrow_forward_rounded, size: 16),
+                            const SizedBox(height: 8),
+                            TextButton(
+                              onPressed: _carregarVagas,
+                              child: const Text('Tentar novamente'),
+                            ),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  for (var index = 0; index < mockVagas.length; index++)
-                    StaggeredListItem(
-                      key: ValueKey(mockVagas[index].titulo),
-                      index: index,
-                      child: _CardVaga(
-                        vaga: mockVagas[index],
-                        onNavigationItemSelected: onNavigationItemSelected,
-                        corDestaque:
-                            AppColors.cardAccentColors[index %
-                                AppColors.cardAccentColors.length],
-                      ),
-                    ),
-                ],
+                      )
+                    else if (_vagas.isEmpty)
+                      const _MensagemVagas(
+                        icone: Icons.work_outline_rounded,
+                        mensagem: 'Nenhuma vaga disponível no momento.',
+                      )
+                    else if (vagasFiltradas.isEmpty)
+                      const _MensagemVagas(
+                        icone: Icons.search_off_rounded,
+                        mensagem: 'Nenhuma vaga encontrada para sua busca.',
+                      )
+                    else
+                      for (
+                        var index = 0;
+                        index < vagasFiltradas.length;
+                        index++
+                      )
+                        StaggeredListItem(
+                          key: ValueKey(
+                            vagasFiltradas[index].id ??
+                                vagasFiltradas[index].titulo,
+                          ),
+                          index: index,
+                          child: _CardVaga(
+                            vaga: vagasFiltradas[index],
+                            authService: widget.authService,
+                            vagasService: _vagasService,
+                            onNavigationItemSelected:
+                                widget.onNavigationItemSelected,
+                            corDestaque:
+                                AppColors.cardAccentColors[vagasFiltradas[index]
+                                        .indiceDestaque %
+                                    AppColors.cardAccentColors.length],
+                          ),
+                        ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -97,14 +251,17 @@ class HomeScreen extends StatelessWidget {
       ),
       bottomNavigationBar: AppBottomNavBar(
         currentIndex: 0,
-        onItemSelected: onNavigationItemSelected ?? (_) {},
+        onItemSelected: widget.onNavigationItemSelected ?? (_) {},
       ),
     );
   }
 }
 
 class _CampoBusca extends StatelessWidget {
-  const _CampoBusca();
+  const _CampoBusca({required this.controller, required this.onChanged});
+
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -121,6 +278,9 @@ class _CampoBusca extends StatelessWidget {
         ],
       ),
       child: TextField(
+        key: const Key('vacancy-search'),
+        controller: controller,
+        onChanged: onChanged,
         textInputAction: TextInputAction.search,
         style: AppTextStyles.bodyText,
         decoration: InputDecoration(
@@ -138,9 +298,31 @@ class _CampoBusca extends StatelessWidget {
           ),
           contentPadding: const EdgeInsets.symmetric(vertical: 14),
         ),
-        onSubmitted: (_) {
-          // TODO: implementar a busca de vagas.
-        },
+      ),
+    );
+  }
+}
+
+class _MensagemVagas extends StatelessWidget {
+  const _MensagemVagas({required this.icone, required this.mensagem});
+
+  final IconData icone;
+  final String mensagem;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 30),
+      child: Column(
+        children: [
+          Icon(icone, size: 36, color: AppColors.neutral600),
+          const SizedBox(height: 10),
+          Text(
+            mensagem,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.bodyText.copyWith(color: AppColors.neutral600),
+          ),
+        ],
       ),
     );
   }
@@ -150,11 +332,15 @@ class _CardVaga extends StatelessWidget {
   const _CardVaga({
     required this.vaga,
     required this.corDestaque,
+    required this.authService,
+    required this.vagasService,
     this.onNavigationItemSelected,
   });
 
   final VagaMock vaga;
   final Color corDestaque;
+  final AuthService authService;
+  final VagasService vagasService;
   final ValueChanged<int>? onNavigationItemSelected;
 
   @override
@@ -213,6 +399,8 @@ class _CardVaga extends StatelessWidget {
                         MaterialPageRoute<void>(
                           builder: (_) => DetalhesVagaScreen(
                             vaga: vaga,
+                            authService: authService,
+                            vagasService: vagasService,
                             onNavigationItemSelected: onNavigationItemSelected,
                           ),
                         ),

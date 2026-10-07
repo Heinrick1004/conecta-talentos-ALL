@@ -3,11 +3,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../mock/mock_favoritos.dart';
 import '../mock/mock_vagas.dart';
+import '../services/auth_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/app_card.dart';
 import '../widgets/icon_avatar_box.dart';
 import '../widgets/primary_button.dart';
+import '../services/vagas_service.dart';
 import 'candidatura_confirmacao_screen.dart';
 
 /// Exibe informações completas de uma vaga selecionada na Home.
@@ -15,12 +17,16 @@ class DetalhesVagaScreen extends StatefulWidget {
   const DetalhesVagaScreen({
     required this.vaga,
     this.jaCandidatado = false,
+    this.authService,
+    this.vagasService,
     this.onNavigationItemSelected,
     super.key,
   });
 
   final VagaMock vaga;
   final bool jaCandidatado;
+  final AuthService? authService;
+  final VagasService? vagasService;
   final ValueChanged<int>? onNavigationItemSelected;
 
   @override
@@ -29,11 +35,44 @@ class DetalhesVagaScreen extends StatefulWidget {
 
 class _DetalhesVagaScreenState extends State<DetalhesVagaScreen> {
   final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+  late VagaMock _vaga;
+  late final VagasService _vagasService;
+
+  bool get _jaCandidatado => _vaga.id != null
+      ? _vaga.jaCandidatado
+      : widget.jaCandidatado || _vaga.jaCandidatado;
+
+  @override
+  void initState() {
+    super.initState();
+    _vaga = widget.vaga;
+    _vagasService =
+        widget.vagasService ??
+        VagasService(authService: widget.authService ?? AuthService());
+    if (_vaga.id != null) _atualizarVaga();
+  }
+
+  Future<void> _atualizarVaga() async {
+    try {
+      final vagaAtualizada = await _vagasService.obterVaga(_vaga.id!);
+      if (!mounted) return;
+      setState(() => _vaga = vagaAtualizada);
+    } on Exception catch (error) {
+      debugPrint('Falha ao atualizar detalhes da vaga: $error');
+      if (!mounted) return;
+      _scaffoldMessengerKey.currentState?.showSnackBar(
+        const SnackBar(
+          content: Text('Não foi possível atualizar os dados da vaga.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final corDestaque =
-        AppColors.cardAccentColors[widget.vaga.indiceDestaque %
+        AppColors.cardAccentColors[_vaga.indiceDestaque %
             AppColors.cardAccentColors.length];
 
     return ScaffoldMessenger(
@@ -56,13 +95,29 @@ class _DetalhesVagaScreenState extends State<DetalhesVagaScreen> {
                     AnimatedBuilder(
                       animation: mockFavoritos,
                       builder: (context, child) {
-                        final favorita = mockFavoritos.contem(widget.vaga);
+                        final favorita = _vaga.id != null
+                            ? _vaga.favoritada
+                            : mockFavoritos.contem(_vaga);
                         return IconButton(
                           tooltip: favorita
                               ? 'Remover dos interesses'
                               : 'Adicionar aos interesses',
                           onPressed: () {
-                            mockFavoritos.alternar(widget.vaga);
+                            if (_vaga.id != null) {
+                              _scaffoldMessengerKey.currentState!
+                                ..removeCurrentSnackBar()
+                                ..showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Favoritos serão sincronizados na próxima etapa.',
+                                    ),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              return;
+                            }
+
+                            mockFavoritos.alternar(_vaga);
                             _scaffoldMessengerKey.currentState!
                               ..removeCurrentSnackBar()
                               ..showSnackBar(
@@ -111,18 +166,18 @@ class _DetalhesVagaScreenState extends State<DetalhesVagaScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     IconAvatarBox.initials(
-                                      label: widget.vaga.sigla,
+                                      label: _vaga.sigla,
                                       color: corDestaque,
                                       size: 58,
                                     ),
                                     const SizedBox(height: 16),
                                     Text(
-                                      widget.vaga.titulo,
+                                      _vaga.titulo,
                                       style: AppTextStyles.displayTitle,
                                     ),
                                     const SizedBox(height: 5),
                                     Text(
-                                      widget.vaga.empresa,
+                                      _vaga.empresa,
                                       style: AppTextStyles.cardSubtitle,
                                     ),
                                     const SizedBox(height: 14),
@@ -132,18 +187,18 @@ class _DetalhesVagaScreenState extends State<DetalhesVagaScreen> {
                                       children: [
                                         _InformacaoVaga(
                                           icone: Icons.location_on_outlined,
-                                          texto: widget.vaga.local,
+                                          texto: _vaga.local,
                                         ),
                                         _InformacaoVaga(
-                                          icone: widget.vaga.iconeModalidade,
-                                          texto: widget.vaga.modalidade,
+                                          icone: _vaga.iconeModalidade,
+                                          texto: _vaga.modalidade,
                                         ),
                                       ],
                                     ),
                                   ],
                                 ),
                               ),
-                              if (widget.vaga.descricao.isNotEmpty) ...[
+                              if (_vaga.descricao.isNotEmpty) ...[
                                 const SizedBox(height: 24),
                                 Text(
                                   'Descrição',
@@ -151,18 +206,18 @@ class _DetalhesVagaScreenState extends State<DetalhesVagaScreen> {
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  widget.vaga.descricao,
+                                  _vaga.descricao,
                                   style: AppTextStyles.bodyText,
                                 ),
                               ],
-                              if (widget.vaga.requisitos.isNotEmpty) ...[
+                              if (_vaga.requisitos.isNotEmpty) ...[
                                 const SizedBox(height: 24),
                                 Text(
                                   'Requisitos',
                                   style: AppTextStyles.sectionTitle,
                                 ),
                                 const SizedBox(height: 10),
-                                for (final requisito in widget.vaga.requisitos)
+                                for (final requisito in _vaga.requisitos)
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 12),
                                     child: Row(
@@ -170,7 +225,9 @@ class _DetalhesVagaScreenState extends State<DetalhesVagaScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Padding(
-                                          padding: const EdgeInsets.only(top: 2),
+                                          padding: const EdgeInsets.only(
+                                            top: 2,
+                                          ),
                                           child: Icon(
                                             Icons.check_circle_outline_rounded,
                                             size: 19,
@@ -222,22 +279,22 @@ class _DetalhesVagaScreenState extends State<DetalhesVagaScreen> {
               ],
             ),
             child: PrimaryButton(
-              label: widget.jaCandidatado
-                  ? 'Você já se candidatou'
-                  : 'Candidatar-se',
-              showArrow: !widget.jaCandidatado,
-              onPressed: widget.jaCandidatado
+              label: _jaCandidatado ? 'Você já se candidatou' : 'Candidatar-se',
+              showArrow: !_jaCandidatado,
+              onPressed: _jaCandidatado
                   ? null
                   : () {
-                Navigator.of(context).push<void>(
-                  MaterialPageRoute<void>(
-                    builder: (_) => CandidaturaConfirmacaoScreen(
-                      vaga: widget.vaga,
-                      onNavigationItemSelected: widget.onNavigationItemSelected,
-                    ),
-                  ),
-                );
-              },
+                      Navigator.of(context).push<void>(
+                        MaterialPageRoute<void>(
+                          builder: (_) => CandidaturaConfirmacaoScreen(
+                            // TODO: integrar a criação real da candidatura via API.
+                            vaga: _vaga,
+                            onNavigationItemSelected:
+                                widget.onNavigationItemSelected,
+                          ),
+                        ),
+                      );
+                    },
             ),
           ),
         ),

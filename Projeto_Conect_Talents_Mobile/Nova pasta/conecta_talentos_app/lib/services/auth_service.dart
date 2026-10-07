@@ -51,6 +51,8 @@ class AuthService {
 
   Future<void> logout() => _tokenStorage.limparSessao();
 
+  Future<String?> obterToken() => _tokenStorage.obterToken();
+
   Future<bool> possuiSessaoValida() async {
     final token = await _tokenStorage.obterToken();
     if (token == null || token.isEmpty || !_tokenNaoExpirado(token)) {
