@@ -14,4 +14,5 @@ public sealed class Candidato
 
     public ICollection<Candidatura> Candidaturas { get; set; } = new List<Candidatura>();
     public ICollection<Notificacao> Notificacoes { get; set; } = new List<Notificacao>();
+    public ICollection<Favorito> Favoritos { get; set; } = new List<Favorito>();
 }

@@ -53,7 +53,8 @@ public sealed class CandidatoVagasController(ConectaTalentosContext db) : Tenant
                 vaga.DataInicio,
                 vaga.DataFim,
                 vaga.Empresa.NomeFantasia,
-                vaga.Candidaturas.Any(item => item.CandidatoId == candidatoId)))
+                vaga.Candidaturas.Any(item => item.CandidatoId == candidatoId),
+                vaga.Favoritos.Any(item => item.CandidatoId == candidatoId)))
             .ToListAsync(cancellationToken);
 
         return Ok(vagas);
@@ -80,7 +81,8 @@ public sealed class CandidatoVagasController(ConectaTalentosContext db) : Tenant
                 item.DataInicio,
                 item.DataFim,
                 item.Empresa.NomeFantasia,
-                item.Candidaturas.Any(application => application.CandidatoId == candidatoId)))
+                item.Candidaturas.Any(application => application.CandidatoId == candidatoId),
+                item.Favoritos.Any(favorite => favorite.CandidatoId == candidatoId)))
             .SingleOrDefaultAsync(cancellationToken);
 
         return vaga is null ? NotFound(new { erro = "Vaga não encontrada." }) : Ok(vaga);

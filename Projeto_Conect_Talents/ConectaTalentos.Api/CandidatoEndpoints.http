@@ -59,6 +59,18 @@ Authorization: Bearer {{candidateToken}}
 GET {{baseUrl}}/api/candidato/vagas/{{vagaId}}
 Authorization: Bearer {{candidateToken}}
 
+### Listar favoritos do candidato autenticado
+GET {{baseUrl}}/api/candidato/favoritos
+Authorization: Bearer {{candidateToken}}
+
+### Adicionar uma vaga aos favoritos (repetir deve continuar retornando 204)
+POST {{baseUrl}}/api/candidato/favoritos/{{vagaId}}
+Authorization: Bearer {{candidateToken}}
+
+### Remover uma vaga dos favoritos (repetir também retorna 204)
+DELETE {{baseUrl}}/api/candidato/favoritos/{{vagaId}}
+Authorization: Bearer {{candidateToken}}
+
 ### Listar candidaturas do candidato
 GET {{baseUrl}}/api/candidato/candidaturas
 Authorization: Bearer {{candidateToken}}
@@ -131,3 +143,10 @@ Content-Type: application/json
 
 ### Acesso sem token deve retornar 401
 GET {{baseUrl}}/api/candidato/perfil
+
+### Acesso sem token a favoritos deve retornar 401
+GET {{baseUrl}}/api/candidato/favoritos
+
+### Token de empresa não pode acessar favoritos (deve retornar 403)
+GET {{baseUrl}}/api/candidato/favoritos
+Authorization: Bearer {{companyToken}}

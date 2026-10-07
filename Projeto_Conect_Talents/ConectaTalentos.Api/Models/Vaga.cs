@@ -18,4 +18,5 @@ public sealed class Vaga
 
     public Empresa Empresa { get; set; } = null!;
     public ICollection<Candidatura> Candidaturas { get; set; } = new List<Candidatura>();
+    public ICollection<Favorito> Favoritos { get; set; } = new List<Favorito>();
 }

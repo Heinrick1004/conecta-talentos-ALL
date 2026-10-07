@@ -60,7 +60,8 @@ public sealed record VagaPublicaDto(
     DateOnly DataInicio,
     DateOnly DataFim,
     string NomeFantasiaEmpresa,
-    bool JaCandidatado);
+    bool JaCandidatado,
+    bool Favoritada);
 
 /// <summary>Identificador da vaga para criar uma candidatura.</summary>
 public sealed class CriarCandidaturaRequest

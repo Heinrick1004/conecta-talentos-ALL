@@ -11,6 +11,7 @@ public sealed class ConectaTalentosContext(DbContextOptions<ConectaTalentosConte
     public DbSet<Vaga> Vagas => Set<Vaga>();
     public DbSet<Candidatura> Candidaturas => Set<Candidatura>();
     public DbSet<Notificacao> Notificacoes => Set<Notificacao>();
+    public DbSet<Favorito> Favoritos => Set<Favorito>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -103,6 +104,32 @@ public sealed class ConectaTalentosContext(DbContextOptions<ConectaTalentosConte
             entity.HasIndex(e => e.CandidatoId);
             entity.HasOne(e => e.Candidato).WithMany(e => e.Notificacoes).HasForeignKey(e => e.CandidatoId).OnDelete(DeleteBehavior.NoAction);
             entity.HasOne(e => e.Candidatura).WithMany(e => e.Notificacoes).HasForeignKey(e => new { e.CandidaturaId, e.CandidatoId }).HasPrincipalKey(e => new { e.Id, e.CandidatoId }).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Favorito>(entity =>
+        {
+            entity.ToTable("Favorito");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("Id").UseIdentityColumn();
+            entity.Property(e => e.CandidatoId).HasColumnName("CandidatoId").IsRequired();
+            entity.Property(e => e.VagaId).HasColumnName("VagaId").IsRequired();
+            entity.Property(e => e.CriadoEm).HasColumnName("CriadoEm")
+                .HasColumnType("datetime")
+                .HasDefaultValueSql("(getdate())")
+                .ValueGeneratedOnAdd();
+            entity.HasIndex(e => new { e.CandidatoId, e.VagaId })
+                .IsUnique()
+                .HasDatabaseName("UQ_Favorito_Candidato_Vaga");
+            entity.HasIndex(e => e.VagaId)
+                .HasDatabaseName("IX_Favorito_VagaId");
+            entity.HasOne(e => e.Candidato)
+                .WithMany(e => e.Favoritos)
+                .HasForeignKey(e => e.CandidatoId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Vaga)
+                .WithMany(e => e.Favoritos)
+                .HasForeignKey(e => e.VagaId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
