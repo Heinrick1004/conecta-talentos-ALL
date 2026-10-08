@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../mock/mock_perfil.dart';
 import '../mock/mock_usuario.dart';
 import '../services/auth_service.dart';
+import '../services/candidaturas_service.dart';
 import '../services/favoritos_service.dart';
 import '../services/vagas_service.dart';
 import '../theme/app_colors.dart';
@@ -24,6 +25,7 @@ class PerfilScreen extends StatelessWidget {
     this.authService,
     this.favoritosService,
     this.vagasService,
+    this.candidaturasService,
     super.key,
   });
 
@@ -32,6 +34,7 @@ class PerfilScreen extends StatelessWidget {
   final AuthService? authService;
   final FavoritosService? favoritosService;
   final VagasService? vagasService;
+  final CandidaturasService? candidaturasService;
 
   @override
   Widget build(BuildContext context) {
@@ -134,6 +137,8 @@ class PerfilScreen extends StatelessWidget {
                           authService: authService,
                           favoritosService: favoritosService,
                           vagasService: vagasService,
+                          candidaturasService: candidaturasService,
+                          onNavigationItemSelected: onNavigationItemSelected,
                         ),
                       ),
                     const SizedBox(height: 4),
@@ -316,12 +321,16 @@ class _ItemMenuPerfil extends StatefulWidget {
     this.authService,
     this.favoritosService,
     this.vagasService,
+    this.candidaturasService,
+    this.onNavigationItemSelected,
   });
 
   final PerfilMenuMock item;
   final AuthService? authService;
   final FavoritosService? favoritosService;
   final VagasService? vagasService;
+  final CandidaturasService? candidaturasService;
+  final ValueChanged<int>? onNavigationItemSelected;
 
   @override
   State<_ItemMenuPerfil> createState() => _ItemMenuPerfilState();
@@ -358,6 +367,8 @@ class _ItemMenuPerfilState extends State<_ItemMenuPerfil> {
                   authService: widget.authService,
                   favoritosService: widget.favoritosService,
                   vagasService: widget.vagasService,
+                  candidaturasService: widget.candidaturasService,
+                  onNavigationItemSelected: widget.onNavigationItemSelected,
                 ),
               ),
             );

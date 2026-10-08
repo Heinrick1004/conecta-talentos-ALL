@@ -5,6 +5,7 @@ import 'capacitacao_screen.dart';
 import 'home_screen.dart';
 import 'perfil_screen.dart';
 import '../services/auth_service.dart';
+import '../services/candidaturas_service.dart';
 import '../services/favoritos_service.dart';
 import '../services/vagas_service.dart';
 
@@ -14,12 +15,14 @@ class MainNavigationScreen extends StatefulWidget {
     this.authService,
     this.vagasService,
     this.favoritosService,
+    this.candidaturasService,
     super.key,
   });
 
   final AuthService? authService;
   final VagasService? vagasService;
   final FavoritosService? favoritosService;
+  final CandidaturasService? candidaturasService;
 
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
@@ -29,6 +32,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   late final AuthService _authService;
   late final VagasService _vagasService;
   late final FavoritosService _favoritosService;
+  late final CandidaturasService _candidaturasService;
   int _selectedIndex = 0;
 
   @override
@@ -39,6 +43,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         widget.vagasService ?? VagasService(authService: _authService);
     _favoritosService =
         widget.favoritosService ?? FavoritosService(authService: _authService);
+    _candidaturasService =
+        widget.candidaturasService ??
+        CandidaturasService(authService: _authService);
   }
 
   void _selecionarAba(int index) {
@@ -55,14 +62,23 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           authService: _authService,
           vagasService: _vagasService,
           favoritosService: _favoritosService,
+          candidaturasService: _candidaturasService,
           onNavigationItemSelected: _selecionarAba,
         ),
-        CandidaturasScreen(onNavigationItemSelected: _selecionarAba),
+        CandidaturasScreen(
+          authService: _authService,
+          vagasService: _vagasService,
+          favoritosService: _favoritosService,
+          candidaturasService: _candidaturasService,
+          isActive: _selectedIndex == 1,
+          onNavigationItemSelected: _selecionarAba,
+        ),
         CapacitacaoScreen(onNavigationItemSelected: _selecionarAba),
         PerfilScreen(
           authService: _authService,
           favoritosService: _favoritosService,
           vagasService: _vagasService,
+          candidaturasService: _candidaturasService,
           onNavigationItemSelected: _selecionarAba,
         ),
       ],

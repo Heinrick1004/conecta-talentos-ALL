@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../mock/mock_candidaturas.dart';
+import '../models/candidatura_model.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
 class CandidaturaProgress extends StatelessWidget {
   const CandidaturaProgress({required this.candidatura, super.key});
 
-  final CandidaturaMock candidatura;
+  final CandidaturaModel candidatura;
 
   Color get _corProgresso => switch (candidatura.status) {
     CandidaturaStatus.emAnalise => AppColors.primary,
@@ -31,14 +31,15 @@ class CandidaturaProgress extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     children: [
                       Container(height: 2, color: AppColors.neutral200),
-                      AnimatedContainer(
+                      AnimatedFractionallySizedBox(
                         duration: const Duration(milliseconds: 500),
                         curve: Curves.easeInOut,
-                        height: 2,
-                        width: _selecionado || index <= candidatura.etapaAtual
-                            ? double.infinity
+                        alignment: Alignment.centerLeft,
+                        widthFactor:
+                            _selecionado || index <= candidatura.etapaAtual
+                            ? 1
                             : 0,
-                        color: _corProgresso,
+                        child: Container(height: 2, color: _corProgresso),
                       ),
                     ],
                   ),

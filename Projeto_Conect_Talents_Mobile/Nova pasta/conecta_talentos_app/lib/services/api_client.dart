@@ -105,13 +105,13 @@ class ApiClient {
   String _errorMessage(int statusCode, dynamic body) {
     if (statusCode == 401) return 'E-mail ou senha inválidos.';
     if (statusCode == 500) return 'Não foi possível concluir a operação.';
-    if (statusCode == 404) return 'Recurso não encontrado.';
 
     if (body is Map<String, dynamic>) {
       final message = body['erro'] ?? body['detail'] ?? body['title'];
       if (message is String && message.trim().isNotEmpty) return message;
     }
 
+    if (statusCode == 404) return 'Recurso não encontrado.';
     if (statusCode == 409) {
       return 'Já existe uma conta cadastrada com esses dados.';
     }

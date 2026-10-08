@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../mock/mock_candidaturas.dart';
+import '../models/candidatura_model.dart';
+import '../services/auth_service.dart';
+import '../services/candidaturas_service.dart';
+import '../services/favoritos_service.dart';
+import '../services/vagas_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/app_card.dart';
@@ -12,11 +16,19 @@ import 'detalhes_vaga_screen.dart';
 class DetalhesCandidaturaScreen extends StatelessWidget {
   const DetalhesCandidaturaScreen({
     required this.candidatura,
+    required this.authService,
+    required this.vagasService,
+    required this.favoritosService,
+    required this.candidaturasService,
     this.onNavigationItemSelected,
     super.key,
   });
 
-  final CandidaturaMock candidatura;
+  final CandidaturaModel candidatura;
+  final AuthService authService;
+  final VagasService vagasService;
+  final FavoritosService favoritosService;
+  final CandidaturasService candidaturasService;
   final ValueChanged<int>? onNavigationItemSelected;
 
   StatusBadgeType get _tipoStatus => switch (candidatura.status) {
@@ -24,6 +36,13 @@ class DetalhesCandidaturaScreen extends StatelessWidget {
     CandidaturaStatus.selecionado => StatusBadgeType.success,
     CandidaturaStatus.rejeitado => StatusBadgeType.danger,
   };
+
+  String get _dataEnviada {
+    final data = candidatura.dataCandidatura;
+    final dia = data.day.toString().padLeft(2, '0');
+    final mes = data.month.toString().padLeft(2, '0');
+    return '$dia/$mes/${data.year}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,6 +141,13 @@ class DetalhesCandidaturaScreen extends StatelessWidget {
                             ),
                           ],
                         ),
+                        const SizedBox(height: 14),
+                        Text(
+                          'Enviada em $_dataEnviada',
+                          style: AppTextStyles.caption.copyWith(
+                            color: AppColors.neutral600,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -181,6 +207,10 @@ class DetalhesCandidaturaScreen extends StatelessWidget {
                 builder: (_) => DetalhesVagaScreen(
                   vaga: vaga,
                   jaCandidatado: true,
+                  authService: authService,
+                  vagasService: vagasService,
+                  favoritosService: favoritosService,
+                  candidaturasService: candidaturasService,
                   onNavigationItemSelected: onNavigationItemSelected,
                 ),
               ),

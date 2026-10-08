@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../mock/mock_vagas.dart';
 import '../services/api_client.dart';
 import '../services/auth_service.dart';
+import '../services/candidaturas_service.dart';
 import '../services/favoritos_service.dart';
 import '../services/vagas_service.dart';
 import '../theme/app_colors.dart';
@@ -17,12 +18,16 @@ class MeusInteressesScreen extends StatefulWidget {
     this.authService,
     this.favoritosService,
     this.vagasService,
+    this.candidaturasService,
+    this.onNavigationItemSelected,
     super.key,
   });
 
   final AuthService? authService;
   final FavoritosService? favoritosService;
   final VagasService? vagasService;
+  final CandidaturasService? candidaturasService;
+  final ValueChanged<int>? onNavigationItemSelected;
 
   @override
   State<MeusInteressesScreen> createState() => _MeusInteressesScreenState();
@@ -86,6 +91,8 @@ class _MeusInteressesScreenState extends State<MeusInteressesScreen> {
           authService: _authService,
           favoritosService: _favoritosService,
           vagasService: _vagasService,
+          candidaturasService: widget.candidaturasService,
+          onNavigationItemSelected: widget.onNavigationItemSelected,
         ),
       ),
     );

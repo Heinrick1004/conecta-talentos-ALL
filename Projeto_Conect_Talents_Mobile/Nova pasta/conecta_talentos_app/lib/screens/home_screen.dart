@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../mock/mock_vagas.dart';
 import '../services/api_client.dart';
 import '../services/auth_service.dart';
+import '../services/candidaturas_service.dart';
 import '../services/favoritos_service.dart';
 import '../services/vagas_service.dart';
 import '../theme/app_colors.dart';
@@ -20,6 +21,7 @@ class HomeScreen extends StatefulWidget {
     required this.authService,
     this.vagasService,
     this.favoritosService,
+    this.candidaturasService,
     this.onNavigationItemSelected,
     super.key,
   });
@@ -27,6 +29,7 @@ class HomeScreen extends StatefulWidget {
   final AuthService authService;
   final VagasService? vagasService;
   final FavoritosService? favoritosService;
+  final CandidaturasService? candidaturasService;
   final ValueChanged<int>? onNavigationItemSelected;
 
   @override
@@ -238,6 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             authService: widget.authService,
                             vagasService: _vagasService,
                             favoritosService: widget.favoritosService,
+                            candidaturasService: widget.candidaturasService,
                             onNavigationItemSelected:
                                 widget.onNavigationItemSelected,
                             corDestaque:
@@ -339,6 +343,7 @@ class _CardVaga extends StatelessWidget {
     required this.authService,
     required this.vagasService,
     this.favoritosService,
+    this.candidaturasService,
     this.onNavigationItemSelected,
   });
 
@@ -347,6 +352,7 @@ class _CardVaga extends StatelessWidget {
   final AuthService authService;
   final VagasService vagasService;
   final FavoritosService? favoritosService;
+  final CandidaturasService? candidaturasService;
   final ValueChanged<int>? onNavigationItemSelected;
 
   @override
@@ -408,6 +414,7 @@ class _CardVaga extends StatelessWidget {
                             authService: authService,
                             vagasService: vagasService,
                             favoritosService: favoritosService,
+                            candidaturasService: candidaturasService,
                             onNavigationItemSelected: onNavigationItemSelected,
                           ),
                         ),

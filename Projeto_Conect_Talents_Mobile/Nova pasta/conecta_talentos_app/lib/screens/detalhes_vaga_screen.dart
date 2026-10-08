@@ -5,6 +5,7 @@ import '../mock/mock_favoritos.dart';
 import '../mock/mock_vagas.dart';
 import '../services/api_client.dart';
 import '../services/auth_service.dart';
+import '../services/candidaturas_service.dart';
 import '../services/favoritos_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
@@ -22,6 +23,7 @@ class DetalhesVagaScreen extends StatefulWidget {
     this.authService,
     this.vagasService,
     this.favoritosService,
+    this.candidaturasService,
     this.onNavigationItemSelected,
     super.key,
   });
@@ -31,6 +33,7 @@ class DetalhesVagaScreen extends StatefulWidget {
   final AuthService? authService;
   final VagasService? vagasService;
   final FavoritosService? favoritosService;
+  final CandidaturasService? candidaturasService;
   final ValueChanged<int>? onNavigationItemSelected;
 
   @override
@@ -42,21 +45,26 @@ class _DetalhesVagaScreenState extends State<DetalhesVagaScreen> {
   late VagaMock _vaga;
   late final VagasService _vagasService;
   late final FavoritosService _favoritosService;
+  late final CandidaturasService _candidaturasService;
+  bool _candidaturaConfirmada = false;
+  bool _abrindoConfirmacao = false;
   bool _alterandoFavorito = false;
 
-  bool get _jaCandidatado => _vaga.id != null
-      ? _vaga.jaCandidatado
-      : widget.jaCandidatado || _vaga.jaCandidatado;
+  bool get _jaCandidatado => _candidaturaConfirmada || _vaga.jaCandidatado;
 
   @override
   void initState() {
     super.initState();
     _vaga = widget.vaga;
+    _candidaturaConfirmada = widget.jaCandidatado || _vaga.jaCandidatado;
     final authService = widget.authService ?? AuthService();
     _vagasService =
         widget.vagasService ?? VagasService(authService: authService);
     _favoritosService =
         widget.favoritosService ?? FavoritosService(authService: authService);
+    _candidaturasService =
+        widget.candidaturasService ??
+        CandidaturasService(authService: authService);
     if (_vaga.id != null) _atualizarVaga();
   }
 
@@ -116,7 +124,11 @@ class _DetalhesVagaScreenState extends State<DetalhesVagaScreen> {
     try {
       final vagaAtualizada = await _vagasService.obterVaga(_vaga.id!);
       if (!mounted) return;
-      setState(() => _vaga = vagaAtualizada);
+      setState(
+        () => _vaga = vagaAtualizada.copyWith(
+          jaCandidatado: _candidaturaConfirmada || vagaAtualizada.jaCandidatado,
+        ),
+      );
     } on Exception catch (error) {
       debugPrint('Falha ao atualizar detalhes da vaga: $error');
       if (!mounted) return;
@@ -126,6 +138,34 @@ class _DetalhesVagaScreenState extends State<DetalhesVagaScreen> {
           duration: Duration(seconds: 2),
         ),
       );
+    }
+  }
+
+  Future<void> _abrirConfirmacao() async {
+    if (_abrindoConfirmacao || _jaCandidatado) return;
+    setState(() => _abrindoConfirmacao = true);
+    int? abaSolicitada;
+    final candidaturaConfirmada = await Navigator.of(context).push<bool>(
+      MaterialPageRoute<bool>(
+        builder: (_) => CandidaturaConfirmacaoScreen(
+          vaga: _vaga,
+          candidaturasService: _candidaturasService,
+          onNavigationItemSelected: (index) => abaSolicitada = index,
+        ),
+      ),
+    );
+    if (!mounted) return;
+    setState(() {
+      _abrindoConfirmacao = false;
+      if (candidaturaConfirmada == true) {
+        _candidaturaConfirmada = true;
+        _vaga = _vaga.copyWith(jaCandidatado: true);
+      }
+    });
+    if (candidaturaConfirmada != true) return;
+    if (abaSolicitada != null && widget.onNavigationItemSelected != null) {
+      widget.onNavigationItemSelected!(abaSolicitada!);
+      Navigator.of(context).popUntil((route) => route.isFirst);
     }
   }
 
@@ -315,20 +355,9 @@ class _DetalhesVagaScreenState extends State<DetalhesVagaScreen> {
             child: PrimaryButton(
               label: _jaCandidatado ? 'Você já se candidatou' : 'Candidatar-se',
               showArrow: !_jaCandidatado,
-              onPressed: _jaCandidatado
+              onPressed: _jaCandidatado || _abrindoConfirmacao
                   ? null
-                  : () {
-                      Navigator.of(context).push<void>(
-                        MaterialPageRoute<void>(
-                          builder: (_) => CandidaturaConfirmacaoScreen(
-                            // TODO: integrar a criação real da candidatura via API.
-                            vaga: _vaga,
-                            onNavigationItemSelected:
-                                widget.onNavigationItemSelected,
-                          ),
-                        ),
-                      );
-                    },
+                  : _abrirConfirmacao,
             ),
           ),
         ),

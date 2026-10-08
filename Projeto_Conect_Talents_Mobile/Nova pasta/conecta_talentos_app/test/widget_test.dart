@@ -7,7 +7,7 @@ import 'package:http/testing.dart';
 
 import 'package:conecta_talentos_app/main.dart';
 import 'package:conecta_talentos_app/mock/mock_favoritos.dart';
-import 'package:conecta_talentos_app/mock/mock_candidaturas.dart';
+import 'package:conecta_talentos_app/models/candidatura_model.dart';
 import 'package:conecta_talentos_app/mock/mock_vagas.dart';
 import 'package:conecta_talentos_app/screens/cadastro_screen.dart';
 import 'package:conecta_talentos_app/screens/candidaturas_screen.dart';
@@ -19,6 +19,7 @@ import 'package:conecta_talentos_app/screens/main_navigation_screen.dart';
 import 'package:conecta_talentos_app/models/auth_models.dart';
 import 'package:conecta_talentos_app/services/api_client.dart';
 import 'package:conecta_talentos_app/services/auth_service.dart';
+import 'package:conecta_talentos_app/services/candidaturas_service.dart';
 import 'package:conecta_talentos_app/services/favoritos_service.dart';
 import 'package:conecta_talentos_app/services/token_storage.dart';
 import 'package:conecta_talentos_app/services/vagas_service.dart';
@@ -160,17 +161,14 @@ void main() {
     },
   );
 
-  test(
-    'candidaturas usam as vagas mock correspondentes sem procurar pelo título',
-    () {
-      expect(mockCandidaturas[0].vaga, same(mockVagas[0]));
-      expect(mockCandidaturas[1].vaga, same(mockVagas[1]));
-      expect(mockCandidaturas[2].vaga, same(mockVagas[2]));
-      expect(mockCandidaturas[3].vaga.titulo, 'Técnico de Suporte');
-      expect(mockCandidaturas[3].vaga.descricao, isEmpty);
-      expect(mockCandidaturas[3].vaga.requisitos, isEmpty);
-    },
-  );
+  test('candidaturas mantêm o ID da vaga real sem procurar pelo título', () {
+    final candidaturas = _candidaturas();
+    expect(candidaturas.map((item) => item.vaga.id), [7, 8, 9, 10]);
+    expect(candidaturas[3].vaga.titulo, 'Técnico de Suporte');
+    expect(candidaturas[3].vaga.descricao, isEmpty);
+    expect(candidaturas[3].vaga.requisitos, isEmpty);
+    expect(candidaturas.every((item) => item.vaga.jaCandidatado), isTrue);
+  });
 
   testWidgets('aplicativo inicia em LoginScreen', (WidgetTester tester) async {
     await tester.pumpWidget(MyApp(authService: _FakeAuthService()));
@@ -385,9 +383,8 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
 
-      await tester.pumpWidget(
-        MaterialApp(theme: AppTheme.light, home: const CandidaturasScreen()),
-      );
+      final vagasService = _CandidaturaVagasService();
+      await tester.pumpWidget(_appCandidaturas(vagasService: vagasService));
       await tester.pumpAndSettle();
 
       final candidatura = find.text('Analista de Sistemas');
@@ -398,9 +395,11 @@ void main() {
 
       expect(find.byType(DetalhesCandidaturaScreen), findsOneWidget);
       expect(find.text('Detalhes da candidatura'), findsOneWidget);
-      expect(find.text('Selecionado'), findsOneWidget);
+      expect(find.text('Selecionado'), findsNWidgets(2));
       expect(find.text('Etapas do processo'), findsOneWidget);
-      expect(find.text('Proposta'), findsOneWidget);
+      expect(find.text('Em análise'), findsOneWidget);
+      expect(find.text('Proposta'), findsNothing);
+      expect(find.text('Entrevista'), findsNothing);
 
       await tester.tap(find.text('Ver vaga'));
       await tester.pumpAndSettle();
@@ -410,6 +409,7 @@ void main() {
       expect(find.text('Você já se candidatou'), findsOneWidget);
       expect(find.byTooltip('Adicionar aos interesses'), findsOneWidget);
       expect(find.text('Candidatar-se'), findsNothing);
+      expect(vagasService.idsConsultados, [8]);
 
       await tester.tap(find.byTooltip('Voltar'));
       await tester.pumpAndSettle();
@@ -428,9 +428,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    await tester.pumpWidget(
-      MaterialApp(theme: AppTheme.light, home: const CandidaturasScreen()),
-    );
+    await tester.pumpWidget(_appCandidaturas());
     await tester.pumpAndSettle();
 
     final emAnalise = find.text('Desenvolvedor .NET');
@@ -438,12 +436,15 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(emAnalise);
     await tester.pumpAndSettle();
-    expect(find.text('Em análise'), findsOneWidget);
-    expect(find.text('Entrevista'), findsOneWidget);
+    expect(find.text('Em análise'), findsNWidgets(2));
+    expect(find.text('Resultado'), findsOneWidget);
+    expect(find.text('Entrevista'), findsNothing);
 
     await tester.tap(find.byTooltip('Voltar'));
     await tester.pumpAndSettle();
-    final filtroRejeitado = find.text('Rejeitado');
+    await tester.drag(find.byType(ListView), const Offset(0, 600));
+    await tester.pumpAndSettle();
+    final filtroRejeitado = find.text('Rejeitado (1)');
     await tester.ensureVisible(filtroRejeitado);
     await tester.pumpAndSettle();
     await tester.tap(filtroRejeitado);
@@ -465,7 +466,13 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: DetalhesVagaScreen(vaga: mockVagas.first),
+        home: DetalhesVagaScreen(
+          vaga: _candidaturas().first.vaga.copyWith(jaCandidatado: false),
+          authService: _FakeAuthService(),
+          vagasService: _CandidaturaVagasService(jaCandidatado: false),
+          favoritosService: _MockFavoritosService(),
+          candidaturasService: _FakeCandidaturasService(),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -475,7 +482,8 @@ void main() {
     await tester.tap(candidatar);
     await tester.pumpAndSettle();
 
-    expect(find.text('Confirmar candidatura'), findsOneWidget);
+    expect(find.text('Confirmar candidatura'), findsNWidgets(2));
+    expect(find.byKey(const Key('confirmar-candidatura')), findsOneWidget);
   });
 
   testWidgets('cadastro rejeita dados inválidos sem chamar a API', (
@@ -598,4 +606,65 @@ class _MockFavoritosService extends FavoritosService {
 
   @override
   Future<List<VagaMock>> listarFavoritos() async => mockFavoritos.vagas;
+}
+
+MaterialApp _appCandidaturas({_CandidaturaVagasService? vagasService}) {
+  return MaterialApp(
+    theme: AppTheme.light,
+    home: CandidaturasScreen(
+      authService: _FakeAuthService(),
+      vagasService: vagasService ?? _CandidaturaVagasService(),
+      favoritosService: _MockFavoritosService(),
+      candidaturasService: _FakeCandidaturasService(),
+    ),
+  );
+}
+
+List<CandidaturaModel> _candidaturas() {
+  return [
+    for (final (index, titulo, empresa, status) in [
+      (0, 'Desenvolvedor .NET', 'XP Tecnologia', 'Pendente'),
+      (1, 'Analista de Sistemas', 'TechSolutions', 'Aceita'),
+      (2, 'Estágio em TI', 'Next Tecnologia', 'Pendente'),
+      (3, 'Técnico de Suporte', 'HelpTech', 'Recusada'),
+    ])
+      CandidaturaModel.fromJson({
+        'id': index + 1,
+        'status': status,
+        'dataCandidatura': '2026-10-07T09:00:00',
+        'atualizadoEm': '2026-10-07T09:00:00',
+        'vaga': {
+          'id': index + 7,
+          'titulo': titulo,
+          'nomeFantasiaEmpresa': empresa,
+          'cidade': 'Sorocaba',
+          'uf': 'SP',
+          'modalidade': 'Hibrido',
+        },
+      }),
+  ];
+}
+
+class _FakeCandidaturasService extends CandidaturasService {
+  _FakeCandidaturasService() : super(authService: _FakeAuthService());
+
+  @override
+  Future<List<CandidaturaModel>> listarCandidaturas() async => _candidaturas();
+}
+
+class _CandidaturaVagasService extends VagasService {
+  _CandidaturaVagasService({this.jaCandidatado = true})
+    : super(authService: _FakeAuthService());
+
+  final bool jaCandidatado;
+  final List<int> idsConsultados = [];
+
+  @override
+  Future<VagaMock> obterVaga(int id) async {
+    idsConsultados.add(id);
+    return _candidaturas()
+        .firstWhere((item) => item.vaga.id == id)
+        .vaga
+        .copyWith(jaCandidatado: jaCandidatado);
+  }
 }
