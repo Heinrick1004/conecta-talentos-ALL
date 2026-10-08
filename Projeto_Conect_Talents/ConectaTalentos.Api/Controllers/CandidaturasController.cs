@@ -1,6 +1,5 @@
 using ConectaTalentos.Api.Data;
 using ConectaTalentos.Api.DTOs;
-using ConectaTalentos.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

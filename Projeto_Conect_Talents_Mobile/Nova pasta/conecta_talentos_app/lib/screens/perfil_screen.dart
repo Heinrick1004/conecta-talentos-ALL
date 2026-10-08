@@ -63,11 +63,6 @@ class _PerfilScreenState extends State<PerfilScreen> {
       descricao: 'Acompanhe novidades e atualizações.',
       icone: Icons.notifications_none_rounded,
     ),
-    (
-      titulo: 'Configurações',
-      descricao: 'Ajuste sua conta e preferências.',
-      icone: Icons.settings_outlined,
-    ),
   ];
 
   late final AuthService _authService;

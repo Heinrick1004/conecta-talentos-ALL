@@ -1,4 +1,4 @@
-import '../mock/mock_vagas.dart';
+import '../models/vaga_model.dart';
 import 'api_client.dart';
 import 'auth_service.dart';
 
@@ -9,7 +9,7 @@ class FavoritosService {
   final ApiClient _apiClient;
   final AuthService _authService;
 
-  Future<List<VagaMock>> listarFavoritos() async {
+  Future<List<VagaModel>> listarFavoritos() async {
     final response = await _comToken(
       (token) => _apiClient.getJson('/api/candidato/favoritos', token: token),
     );
@@ -22,7 +22,7 @@ class FavoritosService {
           if (item is! Map<String, dynamic>) {
             throw const ApiException('Resposta inválida do servidor.');
           }
-          return VagaMock.fromJson(item);
+          return VagaModel.fromJson(item);
         })
         .toList(growable: false);
   }

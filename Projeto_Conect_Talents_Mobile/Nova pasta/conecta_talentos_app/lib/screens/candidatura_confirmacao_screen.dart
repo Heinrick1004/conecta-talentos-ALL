@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-import '../mock/mock_vagas.dart';
+import '../models/vaga_model.dart';
 import '../services/api_client.dart';
 import '../services/candidaturas_service.dart';
 import '../theme/app_colors.dart';
@@ -19,7 +19,7 @@ class CandidaturaConfirmacaoScreen extends StatefulWidget {
     super.key,
   });
 
-  final VagaMock vaga;
+  final VagaModel vaga;
   final CandidaturasService candidaturasService;
   final ValueChanged<int>? onNavigationItemSelected;
 

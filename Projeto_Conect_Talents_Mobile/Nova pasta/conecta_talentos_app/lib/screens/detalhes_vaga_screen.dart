@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-import '../mock/mock_favoritos.dart';
-import '../mock/mock_vagas.dart';
+import '../models/vaga_model.dart';
 import '../services/api_client.dart';
 import '../services/auth_service.dart';
 import '../services/candidaturas_service.dart';
@@ -28,7 +27,7 @@ class DetalhesVagaScreen extends StatefulWidget {
     super.key,
   });
 
-  final VagaMock vaga;
+  final VagaModel vaga;
   final bool jaCandidatado;
   final AuthService? authService;
   final VagasService? vagasService;
@@ -42,13 +41,14 @@ class DetalhesVagaScreen extends StatefulWidget {
 
 class _DetalhesVagaScreenState extends State<DetalhesVagaScreen> {
   final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
-  late VagaMock _vaga;
+  late VagaModel _vaga;
   late final VagasService _vagasService;
   late final FavoritosService _favoritosService;
   late final CandidaturasService _candidaturasService;
   bool _candidaturaConfirmada = false;
   bool _abrindoConfirmacao = false;
   bool _alterandoFavorito = false;
+  bool _favoritoAlterado = false;
 
   bool get _jaCandidatado => _candidaturaConfirmada || _vaga.jaCandidatado;
 
@@ -73,11 +73,8 @@ class _DetalhesVagaScreenState extends State<DetalhesVagaScreen> {
 
     final vagaId = _vaga.id;
     if (vagaId == null) {
-      mockFavoritos.alternar(_vaga);
       _mostrarMensagem(
-        favorita
-            ? 'Vaga removida dos interesses'
-            : 'Vaga adicionada aos interesses',
+        'Não foi possível identificar esta vaga. Abra uma vaga novamente.',
       );
       return;
     }
@@ -90,7 +87,10 @@ class _DetalhesVagaScreenState extends State<DetalhesVagaScreen> {
         await _favoritosService.adicionarFavorito(vagaId);
       }
       if (!mounted) return;
-      setState(() => _vaga = _vaga.copyWith(favoritada: !favorita));
+      setState(() {
+        _favoritoAlterado = true;
+        _vaga = _vaga.copyWith(favoritada: !favorita);
+      });
       _mostrarMensagem(
         favorita
             ? 'Vaga removida dos interesses'
@@ -127,6 +127,9 @@ class _DetalhesVagaScreenState extends State<DetalhesVagaScreen> {
       setState(
         () => _vaga = vagaAtualizada.copyWith(
           jaCandidatado: _candidaturaConfirmada || vagaAtualizada.jaCandidatado,
+          favoritada: _favoritoAlterado
+              ? _vaga.favoritada
+              : vagaAtualizada.favoritada,
         ),
       );
     } on Exception catch (error) {
@@ -192,29 +195,21 @@ class _DetalhesVagaScreenState extends State<DetalhesVagaScreen> {
                       icon: const Icon(Icons.arrow_back_rounded),
                       color: AppColors.neutral900,
                     ),
-                    AnimatedBuilder(
-                      animation: mockFavoritos,
-                      builder: (context, child) {
-                        final favorita = _vaga.id != null
-                            ? _vaga.favoritada
-                            : mockFavoritos.contem(_vaga);
-                        return IconButton(
-                          tooltip: favorita
-                              ? 'Remover dos interesses'
-                              : 'Adicionar aos interesses',
-                          onPressed: _alterandoFavorito
-                              ? null
-                              : () => _alternarFavorito(favorita),
-                          icon: Icon(
-                            favorita
-                                ? Icons.bookmark_rounded
-                                : Icons.bookmark_border_rounded,
-                          ),
-                          color: favorita
-                              ? AppColors.primary
-                              : AppColors.neutral600,
-                        );
-                      },
+                    IconButton(
+                      tooltip: _vaga.favoritada
+                          ? 'Remover dos interesses'
+                          : 'Adicionar aos interesses',
+                      onPressed: _alterandoFavorito
+                          ? null
+                          : () => _alternarFavorito(_vaga.favoritada),
+                      icon: Icon(
+                        _vaga.favoritada
+                            ? Icons.bookmark_rounded
+                            : Icons.bookmark_border_rounded,
+                      ),
+                      color: _vaga.favoritada
+                          ? AppColors.primary
+                          : AppColors.neutral600,
                     ),
                   ],
                 ),

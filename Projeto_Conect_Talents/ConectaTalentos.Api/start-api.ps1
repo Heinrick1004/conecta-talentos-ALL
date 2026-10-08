@@ -4,13 +4,40 @@ $apiProcessName = 'ConectaTalentos.Api'
 $apiPorts = @(5000, 7000)
 $swaggerUrl = 'http://localhost:5000/swagger'
 
+function Test-ApiProcess {
+    param([System.Diagnostics.Process]$Process)
+
+    if (-not $Process) {
+        return $false
+    }
+
+    $projectRoot = [System.IO.Path]::GetFullPath($PSScriptRoot).TrimEnd('\') + '\'
+    if ($Process.ProcessName -ceq $apiProcessName) {
+        return $Process.Path -and $Process.Path.StartsWith($projectRoot, [System.StringComparison]::OrdinalIgnoreCase)
+    }
+
+    if ($Process.ProcessName -cne 'dotnet') {
+        return $false
+    }
+
+    $processInfo = Get-CimInstance Win32_Process -Filter "ProcessId = $($Process.Id)" -ErrorAction SilentlyContinue
+    if (-not $processInfo -or $processInfo.CommandLine -notmatch '^\s*(?:"[^"]+"|\S+)\s+(?:"(?<entry>[^"]+)"|(?<entry>\S+))(?:\s|$)') {
+        return $false
+    }
+
+    $entryPath = $Matches['entry']
+    return [System.IO.Path]::IsPathRooted($entryPath) -and
+        [System.IO.Path]::GetFileName($entryPath) -ceq "$apiProcessName.dll" -and
+        [System.IO.Path]::GetFullPath($entryPath).StartsWith($projectRoot, [System.StringComparison]::OrdinalIgnoreCase)
+}
+
 try {
-    # Localiza listeners nas portas da API e filtra pelo nome exato do processo.
-    $connections = @(Get-NetTCPConnection -State Listen -LocalPort $apiPorts -ErrorAction Stop)
+    # Filtrar após a consulta permite iniciar também quando as portas estão livres.
+    $connections = @(Get-NetTCPConnection -State Listen -ErrorAction Stop | Where-Object { $_.LocalPort -in $apiPorts })
     $apiProcesses = @(
         foreach ($ownerProcessId in ($connections | Select-Object -ExpandProperty OwningProcess -Unique)) {
             $process = Get-Process -Id $ownerProcessId -ErrorAction SilentlyContinue
-            if ($process -and $process.ProcessName -ceq $apiProcessName) {
+            if (Test-ApiProcess $process) {
                 $process
             }
         }
@@ -41,10 +68,10 @@ try {
             exit 0
         }
 
-        # Encerra somente processos cujo nome corresponda exatamente ao executável da API.
+        # Confirma novamente que o processo pertence à API deste projeto antes de encerrá-lo.
         foreach ($process in $apiProcesses) {
             $currentProcess = Get-Process -Id $process.Id -ErrorAction SilentlyContinue
-            if ($currentProcess -and $currentProcess.ProcessName -ceq $apiProcessName) {
+            if (Test-ApiProcess $currentProcess) {
                 Stop-Process -Id $currentProcess.Id -Force -ErrorAction Stop
             }
         }

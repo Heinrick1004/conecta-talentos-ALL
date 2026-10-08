@@ -119,9 +119,6 @@ function renderSidebar(activePage) {
       <div class="sidebar__banner">
         <p class="sidebar__banner-title">${banner.title}</p>
         <p class="sidebar__banner-text">${banner.text}</p>
-        <button class="sidebar__banner-btn" aria-label="Saiba mais">
-          ${ICONS.chevronRight}
-        </button>
         ${SIDEBAR_ILLUSTRATION}
       </div>
     </aside>
@@ -157,10 +154,6 @@ function renderHeader() {
         ${ICONS.moon}
         ${ICONS.sun}
       </button>
-      <button class="top-header__notification" aria-label="Notificações">
-        ${ICONS.bell}
-        <span class="top-header__notification-dot"></span>
-      </button>
       <div class="top-header__account" id="accountMenuContainer">
         <button
           class="top-header__profile"
@@ -175,9 +168,6 @@ function renderHeader() {
           <span class="top-header__chevron">${ICONS.chevronDown}</span>
         </button>
         <nav class="account-menu" id="accountMenu" aria-label="Menu da conta" hidden>
-          <a href="#" class="account-menu__item">Minha conta</a>
-          <a href="#" class="account-menu__item">Configurações</a>
-          <div class="account-menu__divider" aria-hidden="true"></div>
           <a href="login.html" class="account-menu__item account-menu__item--logout" data-logout>Sair</a>
         </nav>
       </div>

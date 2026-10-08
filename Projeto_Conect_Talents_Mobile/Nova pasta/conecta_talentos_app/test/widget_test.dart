@@ -6,9 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
 import 'package:conecta_talentos_app/main.dart';
-import 'package:conecta_talentos_app/mock/mock_favoritos.dart';
 import 'package:conecta_talentos_app/models/candidatura_model.dart';
-import 'package:conecta_talentos_app/mock/mock_vagas.dart';
+import 'package:conecta_talentos_app/models/vaga_model.dart';
 import 'package:conecta_talentos_app/screens/cadastro_screen.dart';
 import 'package:conecta_talentos_app/screens/candidaturas_screen.dart';
 import 'package:conecta_talentos_app/screens/detalhes_candidatura_screen.dart';
@@ -25,6 +24,8 @@ import 'package:conecta_talentos_app/services/token_storage.dart';
 import 'package:conecta_talentos_app/services/vagas_service.dart';
 import 'package:conecta_talentos_app/theme/app_colors.dart';
 import 'package:conecta_talentos_app/theme/app_theme.dart';
+
+import 'fixtures/vagas_fixture.dart';
 
 void main() {
   test('sessão rejeita e apaga token expirado ou malformado', () async {
@@ -140,24 +141,20 @@ void main() {
 
   test(
     'favoritos impedem duplicação e permitem remover e adicionar novamente',
-    () {
-      final vaga = mockVagas.first;
+    () async {
+      final vaga = vagasFixture.first;
+      final favoritos = _MockFavoritosService();
+      await favoritos.adicionarFavorito(vaga.id!);
+      await favoritos.adicionarFavorito(vaga.id!);
+      expect(await favoritos.listarFavoritos(), hasLength(1));
+      expect(favoritos.contemId(vaga.id!), isTrue);
 
-      if (mockFavoritos.contem(vaga)) {
-        mockFavoritos.alternar(vaga);
-      }
-
-      mockFavoritos.adicionar(vaga);
-      mockFavoritos.adicionar(vaga);
-      expect(mockFavoritos.vagas, hasLength(1));
-      expect(mockFavoritos.contem(vaga), isTrue);
-
-      mockFavoritos.remover(vaga);
-      expect(mockFavoritos.vagas, isEmpty);
-      mockFavoritos.adicionar(vaga);
-      expect(mockFavoritos.vagas, hasLength(1));
-      mockFavoritos.remover(vaga);
-      expect(mockFavoritos.vagas, isEmpty);
+      await favoritos.removerFavorito(vaga.id!);
+      expect(await favoritos.listarFavoritos(), isEmpty);
+      await favoritos.adicionarFavorito(vaga.id!);
+      expect(await favoritos.listarFavoritos(), hasLength(1));
+      await favoritos.removerFavorito(vaga.id!);
+      expect(await favoritos.listarFavoritos(), isEmpty);
     },
   );
 
@@ -310,18 +307,15 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    final vaga = mockVagas.first;
-    if (mockFavoritos.contem(vaga)) {
-      mockFavoritos.alternar(vaga);
-    }
+    final favoritos = _MockFavoritosService();
 
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
         home: MainNavigationScreen(
           authService: _FakeAuthService(),
-          vagasService: _MockHomeVagasService(),
-          favoritosService: _MockFavoritosService(),
+          vagasService: _MockHomeVagasService(favoritosService: favoritos),
+          favoritosService: favoritos,
         ),
       ),
     );
@@ -337,15 +331,15 @@ void main() {
 
     await tester.tap(find.byTooltip('Adicionar aos interesses'));
     await tester.pump();
-    expect(mockFavoritos.vagas, hasLength(1));
+    expect(await favoritos.listarFavoritos(), hasLength(1));
     expect(find.text('Vaga adicionada aos interesses'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Remover dos interesses'));
     await tester.pump();
-    expect(mockFavoritos.vagas, isEmpty);
+    expect(await favoritos.listarFavoritos(), isEmpty);
     await tester.tap(find.byTooltip('Adicionar aos interesses'));
     await tester.pump();
-    expect(mockFavoritos.vagas, hasLength(1));
+    expect(await favoritos.listarFavoritos(), hasLength(1));
 
     await tester.tap(find.byTooltip('Voltar'));
     await tester.pump();
@@ -596,20 +590,41 @@ class _MemorySessionStorage implements SessionStorage {
 }
 
 class _MockHomeVagasService extends VagasService {
-  _MockHomeVagasService() : super(authService: _FakeAuthService());
+  _MockHomeVagasService({this.favoritosService})
+    : super(authService: _FakeAuthService());
+
+  final _MockFavoritosService? favoritosService;
 
   @override
-  Future<List<VagaMock>> listarVagas({
+  Future<List<VagaModel>> listarVagas({
     String? cidade,
     String? modalidade,
-  }) async => mockVagas;
+  }) async => vagasFixture;
+
+  @override
+  Future<VagaModel> obterVaga(int id) async => vagasFixture
+      .firstWhere((vaga) => vaga.id == id)
+      .copyWith(favoritada: favoritosService?.contemId(id) ?? false);
 }
 
 class _MockFavoritosService extends FavoritosService {
   _MockFavoritosService() : super(authService: _FakeAuthService());
 
+  final Set<int> _ids = {};
+
+  bool contemId(int id) => _ids.contains(id);
+
   @override
-  Future<List<VagaMock>> listarFavoritos() async => mockFavoritos.vagas;
+  Future<List<VagaModel>> listarFavoritos() async => vagasFixture
+      .where((vaga) => _ids.contains(vaga.id))
+      .map((vaga) => vaga.copyWith(favoritada: true))
+      .toList(growable: false);
+
+  @override
+  Future<void> adicionarFavorito(int vagaId) async => _ids.add(vagaId);
+
+  @override
+  Future<void> removerFavorito(int vagaId) async => _ids.remove(vagaId);
 }
 
 MaterialApp _appCandidaturas({_CandidaturaVagasService? vagasService}) {
@@ -664,7 +679,7 @@ class _CandidaturaVagasService extends VagasService {
   final List<int> idsConsultados = [];
 
   @override
-  Future<VagaMock> obterVaga(int id) async {
+  Future<VagaModel> obterVaga(int id) async {
     idsConsultados.add(id);
     return _candidaturas()
         .firstWhere((item) => item.vaga.id == id)

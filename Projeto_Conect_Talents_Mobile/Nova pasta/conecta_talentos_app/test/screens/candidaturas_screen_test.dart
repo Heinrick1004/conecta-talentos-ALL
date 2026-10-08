@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:conecta_talentos_app/mock/mock_vagas.dart';
+import 'package:conecta_talentos_app/models/vaga_model.dart';
 import 'package:conecta_talentos_app/models/candidatura_model.dart';
 import 'package:conecta_talentos_app/screens/candidaturas_screen.dart';
 import 'package:conecta_talentos_app/screens/detalhes_candidatura_screen.dart';
@@ -329,9 +329,9 @@ class _FakeVagasService extends VagasService {
   final List<int> idsConsultados = [];
 
   @override
-  Future<VagaMock> obterVaga(int id) async {
+  Future<VagaModel> obterVaga(int id) async {
     idsConsultados.add(id);
-    return VagaMock.fromJson({
+    return VagaModel.fromJson({
       'id': id,
       'titulo': 'Backend Developer',
       'nomeFantasiaEmpresa': 'Empresa Teste',

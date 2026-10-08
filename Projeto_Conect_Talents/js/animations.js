@@ -76,26 +76,6 @@
     });
   }
 
-  document.querySelectorAll('.treino-progress__fill').forEach(fill => {
-    window.gsap.fromTo(fill, { scaleX: 0 }, {
-      scaleX: 1,
-      transformOrigin: 'left center',
-      duration: 0.55,
-      delay: 0.18,
-      ease: 'power2.out'
-    });
-  });
-
-  const donutArc = document.getElementById('donut-arc');
-  if (donutArc) {
-    window.gsap.fromTo(donutArc, { strokeDashoffset: 214 }, {
-      strokeDashoffset: 0,
-      duration: 0.65,
-      delay: 0.2,
-      ease: 'power2.out'
-    });
-  }
-
   document.querySelectorAll(
     '.stat-card, .vaga-card, .candidato-card, .treino-card, .job-row, .application-card, .profile-application, .promo-banner, .btn, .filter-btn, .sort-btn, .chevron-btn, .top-header__theme-toggle'
   ).forEach(element => {

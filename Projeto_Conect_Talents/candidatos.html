@@ -36,16 +36,6 @@
               aria-label="Buscar candidatos"
             >
           </div>
-          <button class="filter-btn" aria-label="Filtros">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-            Filtros
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <button class="filter-btn" aria-label="Vagas">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            Todas as vagas
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
         </div>
 
         <div class="candidatos-layout">
@@ -63,11 +53,8 @@
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               </div>
               <div class="total-card__label">Total de candidatos</div>
-              <div class="total-card__value" id="total-candidatos">47</div>
-              <span class="trend" style="justify-content:center">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
-                <span id="crescimento-candidatos">+12% em relação ao mês anterior</span>
-              </span>
+              <div class="total-card__value" id="total-candidatos">—</div>
+              <p class="total-card__label">Candidatos das suas vagas</p>
             </div>
 
             <!-- Filtrar por status -->
@@ -97,7 +84,6 @@
     </div>
   </div>
 
-  <script src="js/mock-data.js"></script>
   <script src="js/hiring-data.js"></script>
   <script src="js/app.js"></script>
   <script>
@@ -118,7 +104,7 @@
           <span class="status-dot status-dot--${f.cor}"></span>
           ${f.label}
         </span>
-        <span class="filter-status-item__count">${f.count}</span>
+        <span class="filter-status-item__count">—</span>
       </div>
     `).join('');
 
@@ -127,7 +113,6 @@
       const safe = HiringData.escapeHtml;
       return `
         <div class="card candidato-card" data-candidato-id="${c.id}" data-status="${c.status}">
-          <input type="checkbox" class="candidato-card__checkbox" aria-label="Selecionar ${c.nome}">
           <img class="candidato-card__avatar" src="${safe(c.avatar)}" alt="Foto de ${safe(c.nome)}" loading="lazy">
           <div class="candidato-card__info">
             <div class="candidato-card__name">${safe(c.nome)}</div>
@@ -215,7 +200,6 @@
       try {
         todosCandidatos = await HiringData.getCandidates();
         document.getElementById('total-candidatos').textContent = todosCandidatos.length;
-        document.getElementById('crescimento-candidatos').textContent = 'Candidatos das suas vagas';
         statusFilters.innerHTML = statusDefinitions.map(filter => {
           const count = todosCandidatos.filter(candidate => candidate.status === filter.status).length;
           return `<div class="filter-status-item" data-status="${filter.status}" role="button" tabindex="0" aria-pressed="false"><span class="filter-status-item__label"><span class="status-dot status-dot--${filter.cor}"></span>${filter.label}</span><span class="filter-status-item__count">${count}</span></div>`;

@@ -43,16 +43,6 @@
               aria-label="Buscar vagas"
             >
           </div>
-          <button class="filter-btn" aria-label="Filtros">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-            Filtros
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <button class="filter-btn" aria-label="Localizações">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            Todas as localizações
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
         </div>
 
         <div class="vagas-layout">
@@ -61,12 +51,8 @@
             <div class="vagas-main__header">
               <div class="vagas-main__title-row">
                 <h2 class="vagas-main__title">Vagas disponíveis</h2>
-                <span class="badge badge--count" id="vacancyCount">0</span>
+                <span class="badge badge--count" id="vacancyCount">—</span>
               </div>
-              <button class="sort-btn" aria-label="Ordenar">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="8" y2="18"/></svg>
-                Mais recentes
-              </button>
             </div>
 
             <!-- Lista de vagas (renderizada via JS) -->
@@ -89,11 +75,11 @@
               </div>
             </div>
 
-            <!-- Mais visualizadas -->
+            <!-- Vagas com mais candidaturas -->
             <div class="card most-viewed-card">
               <h3 class="most-viewed-card__title">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
-                Mais visualizadas
+                Mais candidaturas
               </h3>
               <div id="most-viewed-list"></div>
             </div>
@@ -104,10 +90,7 @@
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>
                 <span class="tip-card__title">Dica</span>
               </div>
-              <p class="tip-card__text">Mantenha seu perfil atualizado para receber recomendações de vagas compatíveis com o seu perfil.</p>
-              <a href="#" class="chevron-btn" aria-label="Saiba mais">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </a>
+              <p class="tip-card__text">Mantenha a descrição e os requisitos das vagas atualizados para apresentar as oportunidades com clareza aos candidatos.</p>
             </div>
           </aside>
         </div>
@@ -115,7 +98,6 @@
     </div>
   </div>
 
-  <script src="js/mock-data.js"></script>
   <script src="js/hiring-data.js"></script>
   <script src="js/app.js"></script>
   <script>
@@ -184,22 +166,6 @@
         vagasList.innerHTML = `<p class="empty-message">${safe(error.message || 'Não foi possível excluir a vaga.')}</p>`;
       }
     });
-
-    /* Mais visualizadas (top 4 por candidaturas) */
-    const topVagas = [...todasVagas].sort((a, b) => b.candidaturas - a.candidaturas).slice(0, 4);
-
-    mostViewedList.innerHTML = topVagas.map(vaga => `
-      <a class="most-viewed-item" href="detalhes-vaga.html?id=${vaga.id}">
-        <div class="most-viewed-item__icon job-icon job-icon--${vaga.cor}" style="width:36px;height:36px;font-size:0.75rem">
-          ${JOB_ICONS[vaga.icone]}
-        </div>
-        <div class="most-viewed-item__info">
-          <div class="most-viewed-item__title">${safe(vaga.titulo)}</div>
-          <div class="most-viewed-item__count">${vaga.candidaturas} candidaturas</div>
-        </div>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-      </a>
-    `).join('');
 
     function renderVagas(vagas = todasVagas) {
       vagasList.innerHTML = vagas.length

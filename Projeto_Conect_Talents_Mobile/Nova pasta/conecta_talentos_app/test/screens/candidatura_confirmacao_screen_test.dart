@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:conecta_talentos_app/mock/mock_vagas.dart';
+import 'package:conecta_talentos_app/models/vaga_model.dart';
 import 'package:conecta_talentos_app/models/candidatura_model.dart';
 import 'package:conecta_talentos_app/screens/candidatura_confirmacao_screen.dart';
 import 'package:conecta_talentos_app/screens/detalhes_vaga_screen.dart';
@@ -233,7 +233,7 @@ void main() {
   testWidgets(
     'GET iniciado antes do POST não desfaz jaCandidatado confirmado',
     (tester) async {
-      final respostaVaga = Completer<VagaMock>();
+      final respostaVaga = Completer<VagaModel>();
       final vagas = _FakeVagasService()..resposta = respostaVaga.future;
       final service = _FakeCandidaturasService();
       await _abrirDetalhes(tester, service, vagasService: vagas);
@@ -286,7 +286,7 @@ void main() {
 Future<void> _abrirConfirmacao(
   WidgetTester tester,
   CandidaturasService service, {
-  VagaMock? vaga,
+  VagaModel? vaga,
 }) async {
   await tester.pumpWidget(
     MaterialApp(
@@ -320,7 +320,7 @@ Future<void> _abrirDetalhes(
   await tester.pumpAndSettle();
 }
 
-VagaMock _vaga({int? id = 7}) => VagaMock(
+VagaModel _vaga({int? id = 7}) => VagaModel(
   id: id,
   titulo: 'Analista mobile',
   empresa: 'Empresa Teste',
@@ -362,10 +362,10 @@ class _FakeCandidaturasService extends CandidaturasService {
 class _FakeVagasService extends VagasService {
   _FakeVagasService() : super(authService: AuthService());
 
-  Future<VagaMock>? resposta;
+  Future<VagaModel>? resposta;
 
   @override
-  Future<VagaMock> obterVaga(int id) async {
+  Future<VagaModel> obterVaga(int id) async {
     final respostaPendente = resposta;
     if (respostaPendente != null) return respostaPendente;
     return _vaga();

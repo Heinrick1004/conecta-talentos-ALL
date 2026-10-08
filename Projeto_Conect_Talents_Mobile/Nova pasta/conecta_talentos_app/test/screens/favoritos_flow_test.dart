@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
-import 'package:conecta_talentos_app/mock/mock_vagas.dart';
+import 'package:conecta_talentos_app/models/vaga_model.dart';
 import 'package:conecta_talentos_app/screens/detalhes_vaga_screen.dart';
 import 'package:conecta_talentos_app/screens/meus_interesses_screen.dart';
 import 'package:conecta_talentos_app/services/api_client.dart';
@@ -18,7 +18,7 @@ void main() {
   testWidgets('Meus interesses mantém o cabeçalho e mostra loading', (
     WidgetTester tester,
   ) async {
-    final resposta = Completer<List<VagaMock>>();
+    final resposta = Completer<List<VagaModel>>();
     final favoritos = _FakeFavoritosService()..resposta = resposta.future;
 
     await tester.pumpWidget(_aplicativo(favoritos));
@@ -191,8 +191,8 @@ Widget _aplicativo(
   );
 }
 
-VagaMock _vaga({bool favoritada = true}) {
-  return VagaMock(
+VagaModel _vaga({bool favoritada = true}) {
+  return VagaModel(
     id: 7,
     titulo: 'Analista mobile',
     empresa: 'Empresa Teste',
@@ -222,8 +222,8 @@ class _FakeAuthService extends AuthService {
 class _FakeFavoritosService extends FavoritosService {
   _FakeFavoritosService() : super(authService: _FakeAuthService());
 
-  List<VagaMock> vagas = [];
-  Future<List<VagaMock>>? resposta;
+  List<VagaModel> vagas = [];
+  Future<List<VagaModel>>? resposta;
   Exception? erro;
   Exception? erroFavoritar;
   int chamadasListagem = 0;
@@ -231,7 +231,7 @@ class _FakeFavoritosService extends FavoritosService {
   final List<int> remocoes = [];
 
   @override
-  Future<List<VagaMock>> listarFavoritos() async {
+  Future<List<VagaModel>> listarFavoritos() async {
     chamadasListagem++;
     final respostaPendente = resposta;
     if (respostaPendente != null) return respostaPendente;
@@ -256,8 +256,8 @@ class _FakeFavoritosService extends FavoritosService {
 class _FakeVagasService extends VagasService {
   _FakeVagasService() : super(authService: _FakeAuthService());
 
-  VagaMock? detalhe;
+  VagaModel? detalhe;
 
   @override
-  Future<VagaMock> obterVaga(int id) async => detalhe!;
+  Future<VagaModel> obterVaga(int id) async => detalhe!;
 }

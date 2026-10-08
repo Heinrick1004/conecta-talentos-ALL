@@ -1,4 +1,4 @@
-@baseUrl = https://localhost:7000
+@baseUrl = http://localhost:5000
 @candidateEmail = candidato.mobile.teste@example.com
 @candidatePassword = Candidate-Test-2026!
 @candidateToken = {{loginCandidato.response.body.token}}

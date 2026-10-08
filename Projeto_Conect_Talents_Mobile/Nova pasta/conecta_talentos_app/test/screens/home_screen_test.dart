@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:conecta_talentos_app/mock/mock_vagas.dart';
+import 'package:conecta_talentos_app/models/vaga_model.dart';
 import 'package:conecta_talentos_app/screens/detalhes_vaga_screen.dart';
 import 'package:conecta_talentos_app/screens/home_screen.dart';
 import 'package:conecta_talentos_app/services/auth_service.dart';
@@ -14,7 +14,7 @@ void main() {
   testWidgets('Home mostra loading e depois as vagas carregadas', (
     WidgetTester tester,
   ) async {
-    final service = _FakeVagasService()..pending = Completer<List<VagaMock>>();
+    final service = _FakeVagasService()..pending = Completer<List<VagaModel>>();
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
@@ -125,7 +125,7 @@ void main() {
     WidgetTester tester,
   ) async {
     final vagaInicial = _vaga();
-    final vagaAtualizada = VagaMock.fromJson({
+    final vagaAtualizada = VagaModel.fromJson({
       'id': 7,
       'titulo': 'Backend Developer atualizado',
       'descricao': 'Descrição atualizada.',
@@ -171,7 +171,7 @@ Future<void> _abrirHome(WidgetTester tester, _FakeVagasService service) async {
   await tester.pumpAndSettle();
 }
 
-VagaMock _vaga() => VagaMock.fromJson({
+VagaModel _vaga() => VagaModel.fromJson({
   'id': 7,
   'titulo': 'Backend Developer',
   'descricao': 'Criação de APIs.',
@@ -184,7 +184,7 @@ VagaMock _vaga() => VagaMock.fromJson({
   'favoritada': false,
 });
 
-VagaMock _vagaFrontend() => VagaMock.fromJson({
+VagaModel _vagaFrontend() => VagaModel.fromJson({
   'id': 8,
   'titulo': 'Frontend Pleno',
   'descricao': 'Desenvolvimento web.',
@@ -200,15 +200,15 @@ VagaMock _vagaFrontend() => VagaMock.fromJson({
 class _FakeVagasService extends VagasService {
   _FakeVagasService() : super(authService: AuthService());
 
-  List<VagaMock> vagas = [];
-  VagaMock? detalhe;
+  List<VagaModel> vagas = [];
+  VagaModel? detalhe;
   Exception? error;
-  Completer<List<VagaMock>>? pending;
+  Completer<List<VagaModel>>? pending;
   int calls = 0;
   int detailCalls = 0;
 
   @override
-  Future<List<VagaMock>> listarVagas({
+  Future<List<VagaModel>> listarVagas({
     String? cidade,
     String? modalidade,
   }) async {
@@ -219,7 +219,7 @@ class _FakeVagasService extends VagasService {
   }
 
   @override
-  Future<VagaMock> obterVaga(int id) async {
+  Future<VagaModel> obterVaga(int id) async {
     detailCalls++;
     if (error case final exception?) throw exception;
     return detalhe ?? _vaga();

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../mock/mock_vagas.dart';
+import '../models/vaga_model.dart';
 import '../services/api_client.dart';
 import '../services/auth_service.dart';
 import '../services/candidaturas_service.dart';
@@ -47,7 +47,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late final VagasService _vagasService;
   final _buscaController = TextEditingController();
-  List<VagaMock> _vagas = [];
+  List<VagaModel> _vagas = [];
   String _busca = '';
   String? _erro;
   bool _carregando = true;
@@ -97,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  List<VagaMock> get _vagasFiltradas {
+  List<VagaModel> get _vagasFiltradas {
     final busca = _buscarNormalizado(_busca);
     if (busca.isEmpty) return _vagas;
     return _vagas
@@ -366,7 +366,7 @@ class _CardVaga extends StatelessWidget {
     this.onNavigationItemSelected,
   });
 
-  final VagaMock vaga;
+  final VagaModel vaga;
   final Color corDestaque;
   final AuthService authService;
   final VagasService vagasService;

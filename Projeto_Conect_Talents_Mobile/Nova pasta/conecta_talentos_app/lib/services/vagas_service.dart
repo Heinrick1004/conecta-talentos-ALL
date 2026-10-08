@@ -1,4 +1,4 @@
-import '../mock/mock_vagas.dart';
+import '../models/vaga_model.dart';
 import 'api_client.dart';
 import 'auth_service.dart';
 
@@ -9,7 +9,7 @@ class VagasService {
   final ApiClient _apiClient;
   final AuthService _authService;
 
-  Future<List<VagaMock>> listarVagas({
+  Future<List<VagaModel>> listarVagas({
     String? cidade,
     String? modalidade,
   }) async {
@@ -31,17 +31,17 @@ class VagasService {
           if (item is! Map<String, dynamic>) {
             throw const ApiException('Resposta inválida do servidor.');
           }
-          return VagaMock.fromJson(item);
+          return VagaModel.fromJson(item);
         })
         .toList(growable: false);
   }
 
-  Future<VagaMock> obterVaga(int id) async {
+  Future<VagaModel> obterVaga(int id) async {
     final response = await _get('/api/candidato/vagas/$id');
     if (response is! Map<String, dynamic>) {
       throw const ApiException('Resposta inválida do servidor.');
     }
-    return VagaMock.fromJson(response);
+    return VagaModel.fromJson(response);
   }
 
   Future<dynamic> _get(String path) async {

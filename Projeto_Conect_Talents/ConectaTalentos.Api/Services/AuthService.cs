@@ -14,7 +14,7 @@ public sealed class AuthService(ConectaTalentosContext db, TokenService tokenSer
         var empresa = await db.Empresas.AsNoTracking()
             .SingleOrDefaultAsync(item => item.Email == email, cancellationToken);
 
-        if (empresa is null || !BCrypt.Net.BCrypt.Verify(request.Senha, empresa.SenhaHash))
+        if (empresa is null || !SenhaValida(request.Senha, empresa.SenhaHash))
         {
             return null;
         }
@@ -30,7 +30,7 @@ public sealed class AuthService(ConectaTalentosContext db, TokenService tokenSer
         var candidato = await db.Candidatos.AsNoTracking()
             .SingleOrDefaultAsync(item => item.Email == email, cancellationToken);
 
-        if (candidato is null || !BCrypt.Net.BCrypt.Verify(request.Senha, candidato.SenhaHash))
+        if (candidato is null || !SenhaValida(request.Senha, candidato.SenhaHash))
         {
             return null;
         }
@@ -112,6 +112,19 @@ public sealed class AuthService(ConectaTalentosContext db, TokenService tokenSer
         }
 
         return (tokenService.CreateToken(empresa), null);
+    }
+
+    private static bool SenhaValida(string senha, string senhaHash)
+    {
+        try
+        {
+            return BCrypt.Net.BCrypt.Verify(senha, senhaHash);
+        }
+        catch (Exception exception) when (exception is BCrypt.Net.SaltParseException or ArgumentException)
+        {
+            // Os marcadores dos dados de exemplo não são hashes de autenticação.
+            return false;
+        }
     }
 
     private static string? EmptyToNull(string? value)

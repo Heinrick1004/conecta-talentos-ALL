@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:conecta_talentos_app/mock/mock_vagas.dart';
+import 'package:conecta_talentos_app/models/vaga_model.dart';
 import 'package:conecta_talentos_app/models/candidatura_model.dart';
 import 'package:conecta_talentos_app/models/perfil_model.dart';
 import 'package:conecta_talentos_app/screens/editar_perfil_screen.dart';
@@ -551,14 +551,14 @@ class _FakeFavoritosService extends FavoritosService {
   Exception? falha;
 
   @override
-  Future<List<VagaMock>> listarFavoritos() async {
+  Future<List<VagaModel>> listarFavoritos() async {
     chamadas++;
     if (falha != null) throw falha!;
     return List.generate(quantidade, (_) => _vaga());
   }
 }
 
-VagaMock _vaga() => const VagaMock(
+VagaModel _vaga() => const VagaModel(
   id: 7,
   titulo: 'Analista mobile',
   empresa: 'Empresa Teste',

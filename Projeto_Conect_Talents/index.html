@@ -23,7 +23,7 @@
       <main class="page-content">
         <!-- Saudação -->
         <section class="dashboard-greeting">
-          <h1 class="page-title">Olá, Empresa X 👋</h1>
+          <h1 class="page-title" id="dashboardGreeting">Olá, Empresa 👋</h1>
           <p class="page-subtitle">Aqui está um resumo das suas atividades no ConectaTalentos.</p>
         </section>
 
@@ -42,14 +42,10 @@
                 </a>
               </div>
               <div>
-                <div class="stat-card__value" id="stat-vagas">08</div>
+                <div class="stat-card__value" id="stat-vagas">—</div>
                 <div class="stat-card__label">Vagas</div>
               </div>
               <div class="stat-card__footer">
-                <span class="trend">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
-                  <span id="stat-vagas-novas">2 novas esta semana</span>
-                </span>
                 <a href="vagas.html" class="chevron-btn" aria-label="Ir para vagas">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                 </a>
@@ -64,14 +60,10 @@
                 </div>
               </div>
               <div>
-                <div class="stat-card__value" id="stat-candidatos">34</div>
+                <div class="stat-card__value" id="stat-candidatos">—</div>
                 <div class="stat-card__label">Candidatos</div>
               </div>
               <div class="stat-card__footer">
-                <span class="trend">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
-                  <span id="stat-candidaturas-novas">6 novas candidaturas</span>
-                </span>
                 <a href="candidatos.html" class="chevron-btn" aria-label="Ir para candidatos">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                 </a>
@@ -112,21 +104,17 @@
     </div>
   </div>
 
-  <script src="js/mock-data.js"></script>
   <script src="js/hiring-data.js"></script>
   <script src="js/app.js"></script>
   <script>
     /* Inicializa layout compartilhado */
     initLayout('dashboard');
+    document.getElementById('dashboardGreeting').textContent = `Olá, ${AuthData.getEmpresaLogada()?.nomeFantasia || 'Empresa'} 👋`;
 
     /* Renderiza lista de vagas recentes */
     const recentJobsList = document.getElementById('recent-jobs-list');
     const safe = HiringData.escapeHtml;
     recentJobsList.innerHTML = '<p class="empty-message">Carregando...</p>';
-    document.getElementById('stat-vagas').textContent = '...';
-    document.getElementById('stat-candidatos').textContent = '...';
-    document.getElementById('stat-vagas-novas').textContent = '— esta semana';
-    document.getElementById('stat-candidaturas-novas').textContent = '— novas candidaturas';
 
     (async function carregarDashboard() {
       try {

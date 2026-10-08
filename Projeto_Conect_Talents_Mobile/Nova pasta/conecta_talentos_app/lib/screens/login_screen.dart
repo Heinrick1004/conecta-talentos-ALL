@@ -119,7 +119,6 @@ class _LoginScreenState extends State<LoginScreen> {
               top: 76,
               right: largura * 0.09,
               child: const ExcludeSemantics(
-                // TODO: substituir por ilustração customizada quando disponível (asset PNG/SVG).
                 child: Icon(
                   Icons.person_rounded,
                   size: 190,
@@ -278,7 +277,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(width: 5),
                         TextButton(
-                          onPressed: () {
+                          onPressed: _carregando ? null : () {
                             Navigator.push<void>(
                               context,
                               MaterialPageRoute<void>(
@@ -344,6 +343,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
+    if (_carregando) return;
     final email = _emailController.text.trim();
     final senha = _senhaController.text;
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../mock/mock_vagas.dart';
+import '../models/vaga_model.dart';
 import '../services/api_client.dart';
 import '../services/auth_service.dart';
 import '../services/candidaturas_service.dart';
@@ -37,7 +37,7 @@ class _MeusInteressesScreenState extends State<MeusInteressesScreen> {
   late final AuthService _authService;
   late final FavoritosService _favoritosService;
   late final VagasService _vagasService;
-  List<VagaMock> _favoritos = [];
+  List<VagaModel> _favoritos = [];
   bool _carregando = true;
   String? _erro;
 
@@ -83,7 +83,7 @@ class _MeusInteressesScreenState extends State<MeusInteressesScreen> {
     }
   }
 
-  Future<void> _abrirDetalhes(VagaMock vaga) async {
+  Future<void> _abrirDetalhes(VagaModel vaga) async {
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
         builder: (_) => DetalhesVagaScreen(
@@ -238,7 +238,7 @@ class _EstadoErro extends StatelessWidget {
 class _CardVagaFavorita extends StatelessWidget {
   const _CardVagaFavorita({required this.vaga, required this.onTap});
 
-  final VagaMock vaga;
+  final VagaModel vaga;
   final VoidCallback onTap;
 
   @override

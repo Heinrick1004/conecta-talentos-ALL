@@ -12,7 +12,7 @@ import 'package:conecta_talentos_app/services/token_storage.dart';
 import 'package:conecta_talentos_app/services/vagas_service.dart';
 
 void main() {
-  test('lista vagas com JWT e converte o JSON para VagaMock', () async {
+  test('lista vagas com JWT e converte o JSON para VagaModel', () async {
     var authorizationHeader = '';
     final service = _service((request) async {
       expect(request.url.path, '/api/candidato/vagas');

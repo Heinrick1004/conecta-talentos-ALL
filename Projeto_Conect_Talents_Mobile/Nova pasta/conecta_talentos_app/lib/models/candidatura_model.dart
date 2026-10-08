@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../mock/mock_vagas.dart';
+import '../models/vaga_model.dart';
 import '../services/api_client.dart';
 
 enum CandidaturaStatus { emAnalise, selecionado, rejeitado }
@@ -30,7 +30,7 @@ class CandidaturaModel {
       status: _status(json['status']),
       dataCandidatura: _data(json['dataCandidatura']),
       atualizadoEm: _data(json['atualizadoEm']),
-      vaga: VagaMock.fromJson(vagaJson).copyWith(jaCandidatado: true),
+      vaga: VagaModel.fromJson(vagaJson).copyWith(jaCandidatado: true),
     );
   }
 
@@ -38,7 +38,7 @@ class CandidaturaModel {
   final CandidaturaStatus status;
   final DateTime dataCandidatura;
   final DateTime atualizadoEm;
-  final VagaMock vaga;
+  final VagaModel vaga;
 
   String get titulo => vaga.titulo;
   String get empresa => vaga.empresa;

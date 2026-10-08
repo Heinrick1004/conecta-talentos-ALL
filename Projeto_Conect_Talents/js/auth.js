@@ -64,4 +64,15 @@
       return Boolean(localStorage.getItem(TOKEN_KEY));
     }
   };
+
+  window.addEventListener('pageshow', event => {
+    const page = window.location.pathname.split('/').pop() || 'index.html';
+    const privatePages = ['index.html', 'vagas.html', 'cadastro-vaga.html', 'detalhes-vaga.html', 'candidatos.html', 'perfil-candidato.html', 'treinamentos.html'];
+    if (!privatePages.includes(page)) return;
+    if (!window.AuthData.isAutenticado()) {
+      window.location.replace('login.html');
+    } else if (event.persisted) {
+      window.location.reload();
+    }
+  });
 })();

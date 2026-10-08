@@ -2440,6 +2440,16 @@ ul {
   gap: 16px;
 }
 
+@media (max-width: 1200px) {
+  .treinamentos-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .treinamentos-sidebar {
+    display: grid;
+  }
+}
+
 @media (max-width: 768px) {
   .treino-hero__content {
     max-width: 100%;

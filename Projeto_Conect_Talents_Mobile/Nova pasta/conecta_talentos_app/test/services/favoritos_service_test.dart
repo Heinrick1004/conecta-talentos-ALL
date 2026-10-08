@@ -4,14 +4,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
-import 'package:conecta_talentos_app/mock/mock_vagas.dart';
+import 'package:conecta_talentos_app/models/vaga_model.dart';
 import 'package:conecta_talentos_app/services/api_client.dart';
 import 'package:conecta_talentos_app/services/auth_service.dart';
 import 'package:conecta_talentos_app/services/favoritos_service.dart';
 
 void main() {
   test(
-    'lista favoritos autenticados e converte a resposta para VagaMock',
+    'lista favoritos autenticados e converte a resposta para VagaModel',
     () async {
       late http.Request request;
       final service = FavoritosService(
@@ -125,7 +125,7 @@ void main() {
   });
 
   test('copyWith atualiza somente os estados solicitados', () {
-    final vaga = VagaMock.fromJson(_vagaJson());
+    final vaga = VagaModel.fromJson(_vagaJson());
     final atualizada = vaga.copyWith(jaCandidatado: true);
 
     expect(atualizada.id, vaga.id);
