@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../mock/mock_capacitacoes.dart';
+import '../services/notificacoes_service.dart';
 import '../services/perfil_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
@@ -16,11 +17,15 @@ class CapacitacaoScreen extends StatelessWidget {
   const CapacitacaoScreen({
     this.onNavigationItemSelected,
     this.perfilService,
+    this.notificacoesService,
+    this.onNotificationsTap,
     super.key,
   });
 
   final ValueChanged<int>? onNavigationItemSelected;
   final PerfilService? perfilService;
+  final NotificacoesService? notificacoesService;
+  final VoidCallback? onNotificationsTap;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +33,11 @@ class CapacitacaoScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            AppHeader(perfilService: perfilService),
+            AppHeader(
+              perfilService: perfilService,
+              notificacoesService: notificacoesService,
+              onNotificationsTap: onNotificationsTap,
+            ),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),

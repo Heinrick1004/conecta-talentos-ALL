@@ -5,6 +5,7 @@ import '../services/api_client.dart';
 import '../services/auth_service.dart';
 import '../services/candidaturas_service.dart';
 import '../services/favoritos_service.dart';
+import '../services/notificacoes_service.dart';
 import '../services/perfil_service.dart';
 import '../services/vagas_service.dart';
 import '../theme/app_colors.dart';
@@ -24,6 +25,8 @@ class HomeScreen extends StatefulWidget {
     this.favoritosService,
     this.candidaturasService,
     this.perfilService,
+    this.notificacoesService,
+    this.onNotificationsTap,
     this.onNavigationItemSelected,
     super.key,
   });
@@ -33,6 +36,8 @@ class HomeScreen extends StatefulWidget {
   final FavoritosService? favoritosService;
   final CandidaturasService? candidaturasService;
   final PerfilService? perfilService;
+  final NotificacoesService? notificacoesService;
+  final VoidCallback? onNotificationsTap;
   final ValueChanged<int>? onNavigationItemSelected;
 
   @override
@@ -125,7 +130,11 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            AppHeader(perfilService: widget.perfilService),
+            AppHeader(
+              perfilService: widget.perfilService,
+              notificacoesService: widget.notificacoesService,
+              onNotificationsTap: widget.onNotificationsTap,
+            ),
             Expanded(
               child: RefreshIndicator(
                 color: AppColors.primary,

@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'candidaturas_screen.dart';
 import 'capacitacao_screen.dart';
 import 'home_screen.dart';
+import 'notificacoes_screen.dart';
 import 'perfil_screen.dart';
 import '../services/auth_service.dart';
 import '../services/candidaturas_service.dart';
 import '../services/favoritos_service.dart';
+import '../services/notificacoes_service.dart';
 import '../services/perfil_service.dart';
 import '../services/vagas_service.dart';
 
@@ -18,6 +20,7 @@ class MainNavigationScreen extends StatefulWidget {
     this.favoritosService,
     this.candidaturasService,
     this.perfilService,
+    this.notificacoesService,
     super.key,
   });
 
@@ -26,6 +29,7 @@ class MainNavigationScreen extends StatefulWidget {
   final FavoritosService? favoritosService;
   final CandidaturasService? candidaturasService;
   final PerfilService? perfilService;
+  final NotificacoesService? notificacoesService;
 
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
@@ -37,7 +41,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   late final FavoritosService _favoritosService;
   late final CandidaturasService _candidaturasService;
   late final PerfilService _perfilService;
+  late final NotificacoesService _notificacoesService;
   int _selectedIndex = 0;
+  bool _notificacoesAbertas = false;
 
   @override
   void initState() {
@@ -52,7 +58,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         CandidaturasService(authService: _authService);
     _perfilService =
         widget.perfilService ?? PerfilService(authService: _authService);
+    _notificacoesService =
+        widget.notificacoesService ??
+        NotificacoesService(authService: _authService);
     _carregarPerfil();
+    _carregarNotificacoes();
   }
 
   Future<void> _carregarPerfil() async {
@@ -63,15 +73,42 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     }
   }
 
+  Future<void> _carregarNotificacoes() async {
+    try {
+      await _notificacoesService.carregarNotificacoes();
+    } on Exception {
+      // A caixa de entrada permite tentar novamente sem bloquear as abas.
+    }
+  }
+
   @override
   void dispose() {
     if (widget.perfilService == null) _perfilService.dispose();
+    if (widget.notificacoesService == null) _notificacoesService.dispose();
     super.dispose();
   }
 
   void _selecionarAba(int index) {
     if (index == _selectedIndex) return;
     setState(() => _selectedIndex = index);
+  }
+
+  Future<void> _abrirNotificacoes() async {
+    if (_notificacoesAbertas) return;
+    _notificacoesAbertas = true;
+    try {
+      await Navigator.of(context).push<void>(
+        MaterialPageRoute<void>(
+          builder: (_) => NotificacoesScreen(
+            notificacoesService: _notificacoesService,
+            perfilService: _perfilService,
+            onNavigationItemSelected: _selecionarAba,
+          ),
+        ),
+      );
+    } finally {
+      _notificacoesAbertas = false;
+    }
   }
 
   @override
@@ -85,6 +122,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           favoritosService: _favoritosService,
           candidaturasService: _candidaturasService,
           perfilService: _perfilService,
+          notificacoesService: _notificacoesService,
+          onNotificationsTap: _abrirNotificacoes,
           onNavigationItemSelected: _selecionarAba,
         ),
         CandidaturasScreen(
@@ -93,11 +132,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           favoritosService: _favoritosService,
           candidaturasService: _candidaturasService,
           perfilService: _perfilService,
+          notificacoesService: _notificacoesService,
+          onNotificationsTap: _abrirNotificacoes,
           isActive: _selectedIndex == 1,
           onNavigationItemSelected: _selecionarAba,
         ),
         CapacitacaoScreen(
           perfilService: _perfilService,
+          notificacoesService: _notificacoesService,
+          onNotificationsTap: _abrirNotificacoes,
           onNavigationItemSelected: _selecionarAba,
         ),
         PerfilScreen(
@@ -106,6 +149,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           vagasService: _vagasService,
           candidaturasService: _candidaturasService,
           perfilService: _perfilService,
+          notificacoesService: _notificacoesService,
+          onNotificationsTap: _abrirNotificacoes,
           isActive: _selectedIndex == 3,
           onNavigationItemSelected: _selecionarAba,
         ),

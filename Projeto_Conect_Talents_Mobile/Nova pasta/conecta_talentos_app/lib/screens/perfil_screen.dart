@@ -4,6 +4,7 @@ import '../models/perfil_model.dart';
 import '../services/auth_service.dart';
 import '../services/candidaturas_service.dart';
 import '../services/favoritos_service.dart';
+import '../services/notificacoes_service.dart';
 import '../services/perfil_service.dart';
 import '../services/vagas_service.dart';
 import '../theme/app_colors.dart';
@@ -24,6 +25,8 @@ class PerfilScreen extends StatefulWidget {
     this.favoritosService,
     this.vagasService,
     this.candidaturasService,
+    this.notificacoesService,
+    this.onNotificationsTap,
     this.isActive = true,
     this.onNavigationItemSelected,
     super.key,
@@ -34,6 +37,8 @@ class PerfilScreen extends StatefulWidget {
   final FavoritosService? favoritosService;
   final VagasService? vagasService;
   final CandidaturasService? candidaturasService;
+  final NotificacoesService? notificacoesService;
+  final VoidCallback? onNotificationsTap;
   final bool isActive;
   final ValueChanged<int>? onNavigationItemSelected;
 
@@ -211,7 +216,13 @@ class _PerfilScreenState extends State<PerfilScreen> {
           body: SafeArea(
             child: Column(
               children: [
-                AppHeader(perfilService: widget.perfilService),
+                AppHeader(
+                  perfilService: widget.perfilService,
+                  notificacoesService: widget.notificacoesService,
+                  onNotificationsTap: _saindo
+                      ? null
+                      : widget.onNotificationsTap,
+                ),
                 Expanded(
                   child: RefreshIndicator(
                     color: AppColors.primary,
@@ -303,6 +314,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                                       ? null
                                       : _abrirEditor,
                                 1 => _saindo ? null : _abrirInteresses,
+                                2 => _saindo ? null : widget.onNotificationsTap,
                                 _ => null,
                               },
                             ),
@@ -389,6 +401,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
     _sessaoEncerrada = true;
     _carregamentoEstatisticas++;
     widget.perfilService.limparPerfil();
+    widget.notificacoesService?.limparNotificacoes();
     Navigator.of(context).pushAndRemoveUntil<void>(
       MaterialPageRoute<void>(
         builder: (_) => LoginScreen(authService: _authService),

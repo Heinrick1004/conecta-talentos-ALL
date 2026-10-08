@@ -50,6 +50,14 @@ class ApiClient {
     return _send('DELETE', path, token: token);
   }
 
+  Future<dynamic> patchJson(
+    String path, {
+    Map<String, dynamic>? body,
+    String? token,
+  }) {
+    return _send('PATCH', path, body: body, token: token);
+  }
+
   Future<dynamic> _send(
     String method,
     String path, {

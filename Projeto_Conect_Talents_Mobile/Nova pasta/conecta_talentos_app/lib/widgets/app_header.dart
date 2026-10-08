@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../services/notificacoes_service.dart';
 import '../services/perfil_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
@@ -9,6 +10,7 @@ class AppHeader extends StatelessWidget {
   const AppHeader({
     this._userName = 'Candidato',
     this.perfilService,
+    this.notificacoesService,
     this.hasUnreadNotifications = false,
     this.onNotificationsTap,
     super.key,
@@ -16,16 +18,17 @@ class AppHeader extends StatelessWidget {
 
   final String _userName;
   final PerfilService? perfilService;
+  final NotificacoesService? notificacoesService;
   String get userName => perfilService?.perfil?.nomeCompleto ?? _userName;
   final bool hasUnreadNotifications;
   final VoidCallback? onNotificationsTap;
 
   @override
   Widget build(BuildContext context) {
-    final service = perfilService;
-    if (service != null) {
+    final services = <Listenable>[?perfilService, ?notificacoesService];
+    if (services.isNotEmpty) {
       return ListenableBuilder(
-        listenable: service,
+        listenable: Listenable.merge(services),
         builder: (_, _) => _buildHeader(),
       );
     }
@@ -33,6 +36,9 @@ class AppHeader extends StatelessWidget {
   }
 
   Widget _buildHeader() {
+    final hasUnread = notificacoesService != null
+        ? notificacoesService!.naoLidas > 0
+        : hasUnreadNotifications;
     final initial = userName.trim().isEmpty
         ? '?'
         : userName.trim().characters.first.toUpperCase();
@@ -105,11 +111,12 @@ class AppHeader extends StatelessWidget {
                 icon: const Icon(Icons.notifications_none_rounded),
                 color: AppColors.neutral600,
               ),
-              if (hasUnreadNotifications)
+              if (hasUnread)
                 Positioned(
                   right: 9,
                   top: 8,
                   child: Container(
+                    key: const Key('notifications-unread-indicator'),
                     width: 9,
                     height: 9,
                     decoration: BoxDecoration(
