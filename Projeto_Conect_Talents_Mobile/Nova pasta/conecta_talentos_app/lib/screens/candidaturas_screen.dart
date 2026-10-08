@@ -5,6 +5,7 @@ import '../services/api_client.dart';
 import '../services/auth_service.dart';
 import '../services/candidaturas_service.dart';
 import '../services/favoritos_service.dart';
+import '../services/perfil_service.dart';
 import '../services/vagas_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
@@ -24,6 +25,7 @@ class CandidaturasScreen extends StatefulWidget {
     this.vagasService,
     this.favoritosService,
     this.candidaturasService,
+    this.perfilService,
     this.isActive = true,
     this.onNavigationItemSelected,
     super.key,
@@ -33,6 +35,7 @@ class CandidaturasScreen extends StatefulWidget {
   final VagasService? vagasService;
   final FavoritosService? favoritosService;
   final CandidaturasService? candidaturasService;
+  final PerfilService? perfilService;
   final bool isActive;
   final ValueChanged<int>? onNavigationItemSelected;
 
@@ -128,10 +131,7 @@ class _CandidaturasScreenState extends State<CandidaturasScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            const AppHeader(
-              userName: 'Candidato',
-              hasUnreadNotifications: true,
-            ),
+            AppHeader(perfilService: widget.perfilService),
             Expanded(
               child: RefreshIndicator(
                 color: AppColors.primary,

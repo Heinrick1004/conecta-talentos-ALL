@@ -1,23 +1,38 @@
 import 'package:flutter/material.dart';
 
+import '../services/perfil_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
 /// Cabeçalho padrão com wordmark, notificações e avatar do usuário.
 class AppHeader extends StatelessWidget {
   const AppHeader({
-    required this.userName,
+    this._userName = 'Candidato',
+    this.perfilService,
     this.hasUnreadNotifications = false,
     this.onNotificationsTap,
     super.key,
   });
 
-  final String userName;
+  final String _userName;
+  final PerfilService? perfilService;
+  String get userName => perfilService?.perfil?.nomeCompleto ?? _userName;
   final bool hasUnreadNotifications;
   final VoidCallback? onNotificationsTap;
 
   @override
   Widget build(BuildContext context) {
+    final service = perfilService;
+    if (service != null) {
+      return ListenableBuilder(
+        listenable: service,
+        builder: (_, _) => _buildHeader(),
+      );
+    }
+    return _buildHeader();
+  }
+
+  Widget _buildHeader() {
     final initial = userName.trim().isEmpty
         ? '?'
         : userName.trim().characters.first.toUpperCase();

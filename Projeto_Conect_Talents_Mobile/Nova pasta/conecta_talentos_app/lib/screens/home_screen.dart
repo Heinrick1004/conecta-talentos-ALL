@@ -5,6 +5,7 @@ import '../services/api_client.dart';
 import '../services/auth_service.dart';
 import '../services/candidaturas_service.dart';
 import '../services/favoritos_service.dart';
+import '../services/perfil_service.dart';
 import '../services/vagas_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
@@ -22,6 +23,7 @@ class HomeScreen extends StatefulWidget {
     this.vagasService,
     this.favoritosService,
     this.candidaturasService,
+    this.perfilService,
     this.onNavigationItemSelected,
     super.key,
   });
@@ -30,6 +32,7 @@ class HomeScreen extends StatefulWidget {
   final VagasService? vagasService;
   final FavoritosService? favoritosService;
   final CandidaturasService? candidaturasService;
+  final PerfilService? perfilService;
   final ValueChanged<int>? onNavigationItemSelected;
 
   @override
@@ -122,10 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            const AppHeader(
-              userName: 'Guilherme',
-              hasUnreadNotifications: true,
-            ),
+            AppHeader(perfilService: widget.perfilService),
             Expanded(
               child: RefreshIndicator(
                 color: AppColors.primary,
@@ -134,10 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
                   children: [
-                    Text(
-                      'Olá, Guilherme 👋',
-                      style: AppTextStyles.displayTitle,
-                    ),
+                    _buildSaudacao(),
                     const SizedBox(height: 5),
                     Text(
                       'Que bom ter você por aqui!',
@@ -261,6 +258,19 @@ class _HomeScreenState extends State<HomeScreen> {
         currentIndex: 0,
         onItemSelected: widget.onNavigationItemSelected ?? (_) {},
       ),
+    );
+  }
+
+  Widget _buildSaudacao() {
+    Widget saudacao() => Text(
+      'Olá, ${widget.perfilService?.perfil?.primeiroNome ?? 'Candidato'} 👋',
+      style: AppTextStyles.displayTitle,
+    );
+    final perfilService = widget.perfilService;
+    if (perfilService == null) return saudacao();
+    return ListenableBuilder(
+      listenable: perfilService,
+      builder: (_, _) => saudacao(),
     );
   }
 }

@@ -228,6 +228,17 @@ class _ServidorCandidaturas {
   Future<http.Response> responder(http.Request request) async {
     expect(request.headers['authorization'], 'Bearer jwt-teste');
     switch ((request.method, request.url.path)) {
+      case ('GET', '/api/candidato/perfil'):
+        return _resposta({
+          'id': 1,
+          'nomeCompleto': 'Candidato Teste',
+          'email': 'candidato@example.test',
+          'telefone': null,
+          'cidade': null,
+          'uf': null,
+          'habilidades': null,
+          'criadoEm': '2026-10-07T09:00:00',
+        });
       case ('GET', '/api/candidato/vagas'):
         return _resposta([_vaga()]);
       case ('GET', '/api/candidato/vagas/7'):

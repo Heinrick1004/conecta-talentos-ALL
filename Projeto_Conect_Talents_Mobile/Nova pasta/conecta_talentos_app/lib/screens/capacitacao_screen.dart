@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../mock/mock_capacitacoes.dart';
+import '../services/perfil_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/app_bottom_nav_bar.dart';
@@ -12,9 +13,14 @@ import '../widgets/staggered_list_item.dart';
 
 /// Tela de treinamentos e desenvolvimento profissional.
 class CapacitacaoScreen extends StatelessWidget {
-  const CapacitacaoScreen({this.onNavigationItemSelected, super.key});
+  const CapacitacaoScreen({
+    this.onNavigationItemSelected,
+    this.perfilService,
+    super.key,
+  });
 
   final ValueChanged<int>? onNavigationItemSelected;
+  final PerfilService? perfilService;
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +28,7 @@ class CapacitacaoScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            const AppHeader(
-              userName: 'Mariana Costa',
-              hasUnreadNotifications: true,
-            ),
+            AppHeader(perfilService: perfilService),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),

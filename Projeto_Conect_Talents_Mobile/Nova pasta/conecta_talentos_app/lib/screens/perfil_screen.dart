@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
-import '../mock/mock_perfil.dart';
-import '../mock/mock_usuario.dart';
+import '../models/perfil_model.dart';
 import '../services/auth_service.dart';
 import '../services/candidaturas_service.dart';
 import '../services/favoritos_service.dart';
+import '../services/perfil_service.dart';
 import '../services/vagas_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
@@ -17,405 +16,556 @@ import 'editar_perfil_screen.dart';
 import 'login_screen.dart';
 import 'meus_interesses_screen.dart';
 
-/// Tela de perfil do candidato.
-class PerfilScreen extends StatelessWidget {
+/// Perfil e contagens associados à conta autenticada do candidato.
+class PerfilScreen extends StatefulWidget {
   const PerfilScreen({
-    this.imageUrl,
-    this.onNavigationItemSelected,
+    required this.perfilService,
     this.authService,
     this.favoritosService,
     this.vagasService,
     this.candidaturasService,
+    this.isActive = true,
+    this.onNavigationItemSelected,
     super.key,
   });
 
-  final String? imageUrl;
-  final ValueChanged<int>? onNavigationItemSelected;
+  final PerfilService perfilService;
   final AuthService? authService;
   final FavoritosService? favoritosService;
   final VagasService? vagasService;
   final CandidaturasService? candidaturasService;
+  final bool isActive;
+  final ValueChanged<int>? onNavigationItemSelected;
+
+  @override
+  State<PerfilScreen> createState() => _PerfilScreenState();
+}
+
+class _PerfilScreenState extends State<PerfilScreen> {
+  static const _menu = <({String titulo, String descricao, IconData icone})>[
+    (
+      titulo: 'Meu currículo',
+      descricao: 'Visualize e edite suas informações.',
+      icone: Icons.description_outlined,
+    ),
+    (
+      titulo: 'Meus interesses',
+      descricao: 'Confira as vagas que você salvou.',
+      icone: Icons.favorite_border_rounded,
+    ),
+    (
+      titulo: 'Notificações',
+      descricao: 'Acompanhe novidades e atualizações.',
+      icone: Icons.notifications_none_rounded,
+    ),
+    (
+      titulo: 'Configurações',
+      descricao: 'Ajuste sua conta e preferências.',
+      icone: Icons.settings_outlined,
+    ),
+  ];
+
+  late final AuthService _authService;
+  late final FavoritosService _favoritosService;
+  late final VagasService _vagasService;
+  late final CandidaturasService _candidaturasService;
+  int? _totalCandidaturas;
+  int? _totalInteresses;
+  int _carregamentoEstatisticas = 0;
+  bool _dialogoSaidaAberto = false;
+  bool _editando = false;
+  bool _saindo = false;
+  bool _sessaoEncerrada = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _authService = widget.authService ?? AuthService();
+    _favoritosService =
+        widget.favoritosService ?? FavoritosService(authService: _authService);
+    _vagasService =
+        widget.vagasService ?? VagasService(authService: _authService);
+    _candidaturasService =
+        widget.candidaturasService ??
+        CandidaturasService(authService: _authService);
+    _agendarCarregamentoPerfil();
+    if (widget.isActive) _carregarEstatisticas();
+  }
+
+  @override
+  void didUpdateWidget(covariant PerfilScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!oldWidget.isActive && widget.isActive) {
+      _agendarCarregamentoPerfil();
+      _carregarEstatisticas();
+    }
+  }
+
+  void _agendarCarregamentoPerfil() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && !_sessaoEncerrada) _carregarPerfil();
+    });
+  }
+
+  Future<void> _carregarPerfil({bool forceRefresh = false}) async {
+    try {
+      await widget.perfilService.carregarPerfil(forceRefresh: forceRefresh);
+    } on Exception {
+      // O serviço compartilha o estado do erro com todas as telas.
+    }
+  }
+
+  Future<void> _carregarEstatisticas() async {
+    final carregamento = ++_carregamentoEstatisticas;
+    setState(() {
+      _totalCandidaturas = null;
+      _totalInteresses = null;
+    });
+
+    Future<void> carregarContagem(
+      Future<int> Function() carregar,
+      void Function(int?) atualizar,
+    ) async {
+      int? total;
+      try {
+        total = await carregar();
+      } on Exception {
+        // Uma contagem indisponível não impede o uso do perfil.
+      }
+      if (!mounted ||
+          _sessaoEncerrada ||
+          carregamento != _carregamentoEstatisticas) {
+        return;
+      }
+      setState(() => atualizar(total));
+    }
+
+    await Future.wait([
+      carregarContagem(
+        () async => (await _candidaturasService.listarCandidaturas()).length,
+        (total) => _totalCandidaturas = total,
+      ),
+      carregarContagem(
+        () async => (await _favoritosService.listarFavoritos()).length,
+        (total) => _totalInteresses = total,
+      ),
+    ]);
+  }
+
+  Future<void> _atualizarPerfil() async {
+    await Future.wait([
+      _carregarPerfil(forceRefresh: true),
+      _carregarEstatisticas(),
+    ]);
+  }
+
+  Future<void> _abrirEditor() async {
+    final perfil = widget.perfilService.perfil;
+    if (perfil == null || _editando) return;
+    setState(() => _editando = true);
+    PerfilModel? atualizado;
+    try {
+      atualizado = await Navigator.of(context).push<PerfilModel>(
+        MaterialPageRoute<PerfilModel>(
+          builder: (_) => EditarPerfilScreen(
+            perfil: perfil,
+            perfilService: widget.perfilService,
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _editando = false);
+    }
+    if (!mounted || atualizado == null) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('Perfil atualizado!')));
+  }
+
+  Future<void> _abrirInteresses() async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => MeusInteressesScreen(
+          authService: _authService,
+          favoritosService: _favoritosService,
+          vagasService: _vagasService,
+          candidaturasService: _candidaturasService,
+          onNavigationItemSelected: widget.onNavigationItemSelected,
+        ),
+      ),
+    );
+    if (mounted && !_sessaoEncerrada) await _carregarEstatisticas();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            AnimatedBuilder(
-              animation: mockUsuario,
-              builder: (context, child) => AppHeader(
-                userName: mockUsuario.nome,
-                hasUnreadNotifications: true,
-              ),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppCard(
-                      child: Row(
-                        children: [
-                          _AvatarPerfil(imageUrl: imageUrl),
-                          const SizedBox(width: 16),
-                          Expanded(
+    return AnimatedBuilder(
+      animation: widget.perfilService,
+      builder: (context, child) {
+        final perfil = widget.perfilService.perfil;
+        final erro = widget.perfilService.erro;
+        final mensagemErro = erro == 'Sua sessão expirou. Faça login novamente.'
+            ? erro
+            : 'Não foi possível carregar seu perfil.';
+
+        return Scaffold(
+          body: SafeArea(
+            child: Column(
+              children: [
+                AppHeader(perfilService: widget.perfilService),
+                Expanded(
+                  child: RefreshIndicator(
+                    color: AppColors.primary,
+                    onRefresh: _atualizarPerfil,
+                    child: ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                      children: [
+                        if (perfil == null && erro == null)
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 40),
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ),
+                        if (erro != null)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 24),
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                AnimatedBuilder(
-                                  animation: mockUsuario,
-                                  builder: (context, child) => Text(
-                                    mockUsuario.nome,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: AppTextStyles.cardTitle.copyWith(
-                                      fontSize: 20,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 5),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primaryLight,
-                                    borderRadius: BorderRadius.circular(24),
-                                  ),
-                                  child: Text(
-                                    mockPerfil.tipo,
-                                    style: AppTextStyles.caption.copyWith(
-                                      color: AppColors.primary,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 7),
                                 Text(
-                                  mockPerfil.bio,
+                                  mensagemErro ??
+                                      'Não foi possível carregar seu perfil.',
+                                  textAlign: TextAlign.center,
                                   style: AppTextStyles.bodyText.copyWith(
                                     color: AppColors.neutral600,
                                   ),
                                 ),
+                                const SizedBox(height: 8),
+                                TextButton(
+                                  onPressed: _atualizarPerfil,
+                                  child: const Text('Tentar novamente'),
+                                ),
                               ],
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    Row(
-                      children: [
-                        for (
-                          var index = 0;
-                          index < mockPerfilEstatisticas.length;
-                          index++
-                        ) ...[
-                          if (index > 0) const SizedBox(width: 8),
-                          Expanded(
-                            child: _CardEstatistica(
-                              estatistica: mockPerfilEstatisticas[index],
-                              cor:
-                                  AppColors.cardAccentColors[index %
-                                      AppColors.cardAccentColors.length],
-                              index: index,
+                        if (perfil != null) ...[
+                          if (widget.perfilService.carregando)
+                            const LinearProgressIndicator(
+                              color: AppColors.primary,
                             ),
+                          _CardPerfil(perfil: perfil),
+                          const SizedBox(height: 14),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _CardEstatistica(
+                                  rotulo: 'Candidaturas',
+                                  valor: _totalCandidaturas,
+                                  icone: Icons.work_outline_rounded,
+                                  cor: AppColors.cardAccentColors[0],
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: _CardEstatistica(
+                                  rotulo: 'Interesses',
+                                  valor: _totalInteresses,
+                                  icone: Icons.favorite_border_rounded,
+                                  cor: AppColors.cardAccentColors[1],
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: _CardEstatistica(
+                                  rotulo: 'Habilidades',
+                                  valor: perfil.listaHabilidades.length,
+                                  icone: Icons.stars_outlined,
+                                  cor: AppColors.cardAccentColors[2],
+                                ),
+                              ),
+                            ],
                           ),
                         ],
+                        const SizedBox(height: 20),
+                        for (var index = 0; index < _menu.length; index++)
+                          StaggeredListItem(
+                            key: ValueKey(_menu[index].titulo),
+                            index: index,
+                            child: _ItemMenuPerfil(
+                              titulo: _menu[index].titulo,
+                              descricao: _menu[index].descricao,
+                              icone: _menu[index].icone,
+                              onTap: switch (index) {
+                                0 =>
+                                  perfil == null || _saindo || _editando
+                                      ? null
+                                      : _abrirEditor,
+                                1 => _saindo ? null : _abrirInteresses,
+                                _ => null,
+                              },
+                            ),
+                          ),
+                        const SizedBox(height: 4),
+                        const _BannerFuturo(),
+                        const SizedBox(height: 12),
+                        AppCard(
+                          padding: EdgeInsets.zero,
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: TextButton.icon(
+                              onPressed: _saindo ? null : _confirmarSaida,
+                              style: TextButton.styleFrom(
+                                alignment: Alignment.centerLeft,
+                                foregroundColor: AppColors.danger,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 14,
+                                ),
+                              ),
+                              icon: const Icon(Icons.logout_rounded),
+                              label: Text(
+                                _saindo ? 'Saindo...' : 'Sair da conta',
+                                style: AppTextStyles.bodyText.copyWith(
+                                  color: AppColors.danger,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 20),
-                    for (var index = 0; index < mockPerfilMenu.length; index++)
-                      StaggeredListItem(
-                        key: ValueKey(mockPerfilMenu[index].titulo),
-                        index: index,
-                        child: _ItemMenuPerfil(
-                          item: mockPerfilMenu[index],
-                          authService: authService,
-                          favoritosService: favoritosService,
-                          vagasService: vagasService,
-                          candidaturasService: candidaturasService,
-                          onNavigationItemSelected: onNavigationItemSelected,
-                        ),
-                      ),
-                    const SizedBox(height: 4),
-                    const _BannerFuturo(),
-                    const SizedBox(height: 12),
-                    AppCard(
-                      padding: EdgeInsets.zero,
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: TextButton.icon(
-                          onPressed: () => _confirmarSaida(
-                            context,
-                            authService ?? AuthService(),
-                          ),
-                          style: TextButton.styleFrom(
-                            alignment: Alignment.centerLeft,
-                            foregroundColor: AppColors.danger,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 14,
-                            ),
-                          ),
-                          icon: const Icon(Icons.logout_rounded),
-                          label: Text(
-                            'Sair da conta',
-                            style: AppTextStyles.bodyText.copyWith(
-                              color: AppColors.danger,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: AppBottomNavBar(
-        currentIndex: 3,
-        onItemSelected: onNavigationItemSelected ?? (_) {},
-      ),
+          ),
+          bottomNavigationBar: AppBottomNavBar(
+            currentIndex: 3,
+            onItemSelected: widget.onNavigationItemSelected ?? (_) {},
+          ),
+        );
+      },
     );
   }
 
-  Future<void> _confirmarSaida(
-    BuildContext context,
-    AuthService authService,
-  ) async {
-    final confirmarSaida = await showDialog<bool>(
+  Future<void> _confirmarSaida() async {
+    if (_dialogoSaidaAberto || _saindo) return;
+    _dialogoSaidaAberto = true;
+    final confirmar = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Sair da conta?'),
         content: const Text('Tem certeza que deseja sair?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
+            onPressed: () => Navigator.pop(dialogContext, false),
             child: const Text('Cancelar'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
+            onPressed: () => Navigator.pop(dialogContext, true),
             style: TextButton.styleFrom(foregroundColor: AppColors.danger),
             child: const Text('Sair'),
           ),
         ],
       ),
     );
-
-    if (confirmarSaida != true || !context.mounted) return;
-
+    _dialogoSaidaAberto = false;
+    if (!mounted || confirmar != true) return;
+    setState(() => _saindo = true);
     try {
-      await authService.logout();
+      await _authService.logout();
     } on Exception {
-      if (!context.mounted) return;
+      if (!mounted) return;
+      setState(() => _saindo = false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Não foi possível encerrar a sessão.')),
       );
       return;
     }
-    if (!context.mounted) return;
+    if (!mounted) return;
+    _sessaoEncerrada = true;
+    _carregamentoEstatisticas++;
+    widget.perfilService.limparPerfil();
     Navigator.of(context).pushAndRemoveUntil<void>(
       MaterialPageRoute<void>(
-        builder: (_) => LoginScreen(authService: authService),
+        builder: (_) => LoginScreen(authService: _authService),
       ),
       (route) => false,
     );
   }
 }
 
-class _AvatarPerfil extends StatelessWidget {
-  const _AvatarPerfil({required this.imageUrl});
+class _CardPerfil extends StatelessWidget {
+  const _CardPerfil({required this.perfil});
 
-  final String? imageUrl;
+  final PerfilModel perfil;
 
   @override
   Widget build(BuildContext context) {
-    final hasImage = imageUrl != null && imageUrl!.trim().isNotEmpty;
-
-    return CircleAvatar(
-      radius: 40,
-      backgroundColor: AppColors.neutral100,
-      child: ClipOval(
-        child: SizedBox(
-          width: 76,
-          height: 76,
-          child: hasImage
-              ? Image.network(
-                  imageUrl!,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) =>
-                      _avatarPlaceholder(),
-                )
-              : _avatarPlaceholder(),
-        ),
+    final inicial = perfil.nomeCompleto.trim().characters.first.toUpperCase();
+    return AppCard(
+      key: const Key('perfil-dados'),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 40,
+            backgroundColor: AppColors.primaryLight,
+            child: Text(
+              inicial,
+              style: AppTextStyles.displayTitle.copyWith(
+                color: AppColors.primary,
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  perfil.nomeCompleto,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.cardTitle.copyWith(fontSize: 20),
+                ),
+                const SizedBox(height: 5),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryLight,
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: Text(
+                    'Candidato',
+                    style: AppTextStyles.caption.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 7),
+                Text(
+                  perfil.email,
+                  style: AppTextStyles.bodyText.copyWith(
+                    color: AppColors.neutral600,
+                  ),
+                ),
+                if (perfil.localidade.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(perfil.localidade, style: AppTextStyles.caption),
+                ],
+              ],
+            ),
+          ),
+        ],
       ),
-    );
-  }
-
-  Widget _avatarPlaceholder() {
-    return const ColoredBox(
-      color: AppColors.neutral100,
-      child: Icon(Icons.person_rounded, size: 38, color: AppColors.neutral400),
     );
   }
 }
 
 class _CardEstatistica extends StatelessWidget {
   const _CardEstatistica({
-    required this.estatistica,
+    required this.rotulo,
+    required this.valor,
+    required this.icone,
     required this.cor,
-    required this.index,
   });
 
-  final PerfilEstatisticaMock estatistica;
+  final String rotulo;
+  final int? valor;
+  final IconData icone;
   final Color cor;
-  final int index;
 
   @override
   Widget build(BuildContext context) {
     return AppCard(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
-          child: Column(
-            children: [
-              Icon(estatistica.icone, size: 20, color: cor),
-              const SizedBox(height: 6),
-              Text(
-                '${estatistica.valor}',
-                style: AppTextStyles.sectionTitle.copyWith(
-                  fontSize: 22,
-                  color: AppColors.navy,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                estatistica.rotulo,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.caption.copyWith(fontSize: 10),
-              ),
-            ],
+      key: ValueKey('perfil-estatistica-$rotulo'),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
+      child: Column(
+        children: [
+          Icon(icone, size: 20, color: cor),
+          const SizedBox(height: 6),
+          Text(
+            valor?.toString() ?? '—',
+            style: AppTextStyles.sectionTitle.copyWith(
+              fontSize: 22,
+              color: AppColors.navy,
+            ),
           ),
-        )
-        .animate(delay: Duration(milliseconds: 90 * index))
-        .fadeIn(duration: const Duration(milliseconds: 280))
-        .scale(
-          begin: const Offset(0.8, 0.8),
-          end: const Offset(1, 1),
-          duration: const Duration(milliseconds: 320),
-          curve: Curves.easeOutBack,
-        );
+          const SizedBox(height: 2),
+          Text(
+            rotulo,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.caption.copyWith(fontSize: 10),
+          ),
+        ],
+      ),
+    );
   }
 }
 
-class _ItemMenuPerfil extends StatefulWidget {
+class _ItemMenuPerfil extends StatelessWidget {
   const _ItemMenuPerfil({
-    required this.item,
-    this.authService,
-    this.favoritosService,
-    this.vagasService,
-    this.candidaturasService,
-    this.onNavigationItemSelected,
+    required this.titulo,
+    required this.descricao,
+    required this.icone,
+    this.onTap,
   });
 
-  final PerfilMenuMock item;
-  final AuthService? authService;
-  final FavoritosService? favoritosService;
-  final VagasService? vagasService;
-  final CandidaturasService? candidaturasService;
-  final ValueChanged<int>? onNavigationItemSelected;
-
-  @override
-  State<_ItemMenuPerfil> createState() => _ItemMenuPerfilState();
-}
-
-class _ItemMenuPerfilState extends State<_ItemMenuPerfil> {
-  bool _pressionado = false;
-
-  void _definirPressionado(bool valor) {
-    if (_pressionado == valor) return;
-    setState(() => _pressionado = valor);
-  }
+  final String titulo;
+  final String descricao;
+  final IconData icone;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: widget.item.titulo,
-      child: GestureDetector(
-        onTapDown: (_) => _definirPressionado(true),
-        onTapUp: (_) => _definirPressionado(false),
-        onTapCancel: () => _definirPressionado(false),
-        onTap: () {
-          if (widget.item.titulo == 'Meu currículo') {
-            Navigator.of(context).push<void>(
-              MaterialPageRoute<void>(
-                builder: (_) => const EditarPerfilScreen(),
-              ),
-            );
-          } else if (widget.item.titulo == 'Meus interesses') {
-            Navigator.of(context).push<void>(
-              MaterialPageRoute<void>(
-                builder: (_) => MeusInteressesScreen(
-                  authService: widget.authService,
-                  favoritosService: widget.favoritosService,
-                  vagasService: widget.vagasService,
-                  candidaturasService: widget.candidaturasService,
-                  onNavigationItemSelected: widget.onNavigationItemSelected,
+    return AppCard(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: EdgeInsets.zero,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: AppColors.neutral100,
+                  borderRadius: BorderRadius.circular(13),
                 ),
+                alignment: Alignment.center,
+                child: Icon(icone, color: AppColors.navy, size: 21),
               ),
-            );
-          } else {
-            // TODO: abrir a seção correspondente do perfil.
-          }
-        },
-        child: AnimatedScale(
-          scale: _pressionado ? 0.985 : 1,
-          duration: const Duration(milliseconds: 120),
-          child: AppCard(
-            margin: const EdgeInsets.only(bottom: 10),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            child: Row(
-              children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: AppColors.neutral100,
-                    borderRadius: BorderRadius.circular(13),
-                  ),
-                  alignment: Alignment.center,
-                  child: Icon(
-                    widget.item.icone,
-                    color: AppColors.navy,
-                    size: 21,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(widget.item.titulo, style: AppTextStyles.cardTitle),
-                      const SizedBox(height: 3),
-                      Text(
-                        widget.item.descricao,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.caption.copyWith(
-                          color: AppColors.neutral600,
-                        ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(titulo, style: AppTextStyles.cardTitle),
+                    const SizedBox(height: 3),
+                    Text(
+                      descricao,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.neutral600,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+              ),
+              if (onTap != null) ...[
                 const SizedBox(width: 8),
                 const Icon(
                   Icons.chevron_right_rounded,
@@ -423,7 +573,7 @@ class _ItemMenuPerfilState extends State<_ItemMenuPerfil> {
                   size: 22,
                 ),
               ],
-            ),
+            ],
           ),
         ),
       ),
@@ -431,146 +581,31 @@ class _ItemMenuPerfilState extends State<_ItemMenuPerfil> {
   }
 }
 
-class _BannerFuturo extends StatefulWidget {
+class _BannerFuturo extends StatelessWidget {
   const _BannerFuturo();
 
   @override
-  State<_BannerFuturo> createState() => _BannerFuturoState();
-}
-
-class _BannerFuturoState extends State<_BannerFuturo> {
-  bool _pressionado = false;
-
-  void _definirPressionado(bool valor) {
-    if (_pressionado == valor) return;
-    setState(() => _pressionado = valor);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => _definirPressionado(true),
-      onTapUp: (_) => _definirPressionado(false),
-      onTapCancel: () => _definirPressionado(false),
-      onTap: () {
-        // TODO: abrir oportunidades de desenvolvimento para o candidato.
-      },
-      child: AnimatedScale(
-        scale: _pressionado ? 0.985 : 1,
-        duration: const Duration(milliseconds: 130),
-        child: AppCard(
-          padding: EdgeInsets.zero,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Container(
-              constraints: const BoxConstraints(minHeight: 190),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.blue.withValues(alpha: 0.12),
-                    AppColors.white,
-                  ],
-                ),
-              ),
-              child: Stack(
-                children: [
-                  Positioned(
-                    right: -24,
-                    top: -32,
-                    child: Container(
-                      width: 150,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        color: AppColors.blue.withValues(alpha: 0.07),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    right: 18,
-                    top: 30,
-                    child: Icon(
-                      Icons.track_changes_rounded,
-                      size: 96,
-                      color: AppColors.blue.withValues(alpha: 0.2),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(18, 18, 58, 62),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 36,
-                          height: 36,
-                          decoration: const BoxDecoration(
-                            color: AppColors.blue,
-                            shape: BoxShape.circle,
-                          ),
-                          alignment: Alignment.center,
-                          child: const Icon(
-                            Icons.track_changes_rounded,
-                            color: AppColors.white,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          'Seu futuro começa agora!',
-                          style: AppTextStyles.sectionTitle,
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'Continue se desenvolvendo e aproveite as oportunidades.',
-                          style: AppTextStyles.bodyText.copyWith(
-                            color: AppColors.neutral600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Positioned(
-                    right: 15,
-                    bottom: 14,
-                    child:
-                        Container(
-                              width: 42,
-                              height: 42,
-                              decoration: const BoxDecoration(
-                                color: AppColors.blue,
-                                shape: BoxShape.circle,
-                              ),
-                              child: IconButton(
-                                tooltip: 'Explorar oportunidades',
-                                onPressed: () {
-                                  // TODO: abrir as oportunidades recomendadas.
-                                },
-                                padding: EdgeInsets.zero,
-                                icon: const Icon(
-                                  Icons.arrow_forward_rounded,
-                                  color: AppColors.white,
-                                  size: 20,
-                                ),
-                              ),
-                            )
-                            .animate(
-                              onPlay: (controller) =>
-                                  controller.repeat(reverse: true),
-                            )
-                            .scale(
-                              begin: const Offset(1, 1),
-                              end: const Offset(1.07, 1.07),
-                              duration: const Duration(milliseconds: 900),
-                              curve: Curves.easeInOut,
-                            ),
-                  ),
-                ],
-              ),
-            ),
+    return AppCard(
+      gradient: LinearGradient(
+        colors: [AppColors.blue.withValues(alpha: 0.12), AppColors.white],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(
+            Icons.track_changes_rounded,
+            color: AppColors.blue,
+            size: 36,
           ),
-        ),
+          const SizedBox(height: 10),
+          Text('Seu futuro começa agora!', style: AppTextStyles.sectionTitle),
+          const SizedBox(height: 6),
+          Text(
+            'Continue se desenvolvendo e aproveite as oportunidades.',
+            style: AppTextStyles.bodyText.copyWith(color: AppColors.neutral600),
+          ),
+        ],
       ),
     );
   }

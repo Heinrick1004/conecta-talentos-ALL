@@ -218,7 +218,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 250));
 
-    expect(find.text('Olá, Guilherme 👋'), findsOneWidget);
+    expect(find.text('Olá, Candidato 👋'), findsOneWidget);
     expect(find.text('Vagas para você'), findsOneWidget);
   });
 
@@ -270,7 +270,11 @@ void main() {
     await tester.tap(find.text('Perfil'));
     await tester.pump();
     final botaoSair = find.text('Sair da conta');
-    await tester.ensureVisible(botaoSair);
+    await tester.scrollUntilVisible(
+      botaoSair,
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.pump();
     await tester.tap(botaoSair);
     await tester.pump();
