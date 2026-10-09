@@ -1,0 +1,1900 @@
+## 2 CARACTERIZAÇÃO DA EMPRESA
+
+### 2.1 Empresa fictícia
+
+A ConectaTalentos é uma empresa fictícia do setor de tecnologia da informação, criada com o objetivo de oferecer uma solução digital para auxiliar empresas na organização de seus processos de recrutamento e, ao mesmo tempo, proporcionar aos candidatos recursos para acompanhamento de oportunidades profissionais e desenvolvimento de competências.
+
+A empresa disponibiliza uma plataforma integrada composta por um aplicativo mobile e uma plataforma web administrativa. O aplicativo será direcionado principalmente aos candidatos, permitindo o gerenciamento de seus perfis profissionais, consulta de oportunidades de emprego, acompanhamento de candidaturas e acesso a cursos de capacitação. A plataforma web será destinada às empresas contratantes, possibilitando o gerenciamento de vagas, candidatos e processos seletivos.
+
+Além das funcionalidades relacionadas ao recrutamento, a ConectaTalentos terá como parte de sua proposta a disponibilização de conteúdos voltados à formação profissional e à conscientização sobre diversidade e inclusão no ambiente de trabalho. Dessa forma, a solução busca combinar tecnologia, desenvolvimento profissional e responsabilidade social em uma única plataforma.
+
+### 2.2 Segmento de atuação
+
+A ConectaTalentos atuará no segmento de tecnologia aplicada a recursos humanos, com foco em recrutamento, seleção e desenvolvimento profissional.
+
+Seu público será composto principalmente por pequenas e médias empresas que necessitam de uma ferramenta digital para organizar seus processos de contratação, e por candidatos que buscam oportunidades de trabalho e recursos para aprimorar sua preparação profissional.
+
+A solução será estruturada de maneira integrada, utilizando um aplicativo mobile para os candidatos e uma plataforma web administrativa para as empresas. A comunicação entre essas aplicações será realizada por meio de uma API, permitindo o compartilhamento e o gerenciamento das informações de forma centralizada.
+
+### 2.3 Problema identificado
+
+Pequenas e médias empresas podem enfrentar dificuldades para organizar seus processos de recrutamento, principalmente quando utilizam diferentes ferramentas para divulgar vagas, receber informações dos candidatos e acompanhar as etapas de seleção.
+
+Para os candidatos, a ausência de uma plataforma centralizada também pode dificultar o acompanhamento das oportunidades disponíveis, das candidaturas realizadas e dos recursos de preparação profissional.
+
+Diante desse cenário, identifica-se a necessidade de uma solução que aproxime empresas e candidatos por meio de um ambiente digital integrado, simplificando o gerenciamento das vagas e permitindo que os candidatos acompanhem sua participação nos processos seletivos.
+
+Também foi identificada a necessidade de ampliar o acesso dos usuários a conteúdos relacionados ao desenvolvimento profissional e à diversidade no ambiente de trabalho. Nesse sentido, a plataforma poderá disponibilizar cursos, incluindo conteúdos relacionados à diversidade étnico-racial e à conscientização profissional.
+
+### 2.4 Necessidades da empresa
+
+Para atender aos problemas identificados, a ConectaTalentos necessita de uma solução tecnológica capaz de centralizar as principais informações relacionadas ao processo de recrutamento e desenvolvimento dos usuários.
+
+Entre as principais necessidades da empresa estão:
+
+- disponibilizar cadastro e autenticação de usuários;
+- permitir que candidatos criem e mantenham seus perfis profissionais;
+- possibilitar o cadastro e gerenciamento de vagas pelas empresas;
+- permitir que candidatos consultem oportunidades e realizem candidaturas;
+- possibilitar o acompanhamento do status das candidaturas;
+- disponibilizar cursos e conteúdos de capacitação aos candidatos;
+- registrar o progresso dos usuários nos cursos realizados;
+- disponibilizar conteúdos relacionados à diversidade étnico-racial e inclusão;
+- fornecer às empresas uma plataforma web para gerenciamento das informações;
+- integrar o aplicativo mobile e a plataforma web por meio de uma API REST;
+- utilizar banco de dados para armazenamento e gerenciamento das informações;
+- garantir mecanismos de autenticação, autorização e segurança dos usuários.
+
+A partir dessas necessidades, a ConectaTalentos poderá oferecer uma solução integrada que combine recrutamento, desenvolvimento profissional e ações de inclusão, utilizando recursos de desenvolvimento mobile e web para atender às necessidades dos diferentes usuários da plataforma.
+
+## 3 PROPOSTA DA SOLUÇÃO
+
+### 3.1 Objetivo da solução
+
+A solução proposta para a ConectaTalentos consiste no desenvolvimento de uma plataforma integrada destinada a aproximar empresas e candidatos durante os processos de recrutamento e desenvolvimento profissional.
+
+O objetivo principal é centralizar, em um único ambiente digital, recursos relacionados à divulgação e gerenciamento de vagas, candidatura às oportunidades, acompanhamento dos processos seletivos e acesso a conteúdos de capacitação profissional.
+
+A solução será composta por um aplicativo mobile, destinado principalmente aos candidatos, e uma plataforma web administrativa, destinada às empresas e aos responsáveis pelo gerenciamento do sistema. As aplicações serão integradas por meio de uma API, permitindo o compartilhamento das informações e o armazenamento centralizado dos dados.
+
+Além do apoio aos processos de recrutamento, a solução terá como objetivo disponibilizar conteúdos educacionais relacionados ao desenvolvimento profissional, incluindo cursos voltados à diversidade étnico-racial e à inclusão no ambiente de trabalho.
+
+### 3.2 Proposta de valor
+
+A proposta de valor da ConectaTalentos está baseada na integração entre recrutamento, desenvolvimento profissional e responsabilidade social em uma única solução tecnológica.
+
+Para as empresas, a plataforma oferece uma maneira mais organizada de administrar vagas e candidatos, permitindo centralizar informações relacionadas aos processos seletivos e facilitar o acompanhamento das candidaturas.
+
+Para os candidatos, a solução proporciona um ambiente no qual podem manter seu perfil profissional, consultar oportunidades, realizar candidaturas e acompanhar o andamento dos processos seletivos. Além disso, o acesso a cursos e conteúdos de capacitação permite complementar sua preparação profissional.
+
+Outro diferencial da solução é a inclusão de conteúdos relacionados à diversidade e à inclusão no ambiente profissional. Entre os conteúdos disponibilizados estará um curso sobre diversidade étnico-racial, contribuindo para a conscientização dos usuários e para a valorização da diversidade no contexto profissional.
+
+Dessa forma, a ConectaTalentos busca oferecer uma solução acessível e integrada, capaz de atender simultaneamente às necessidades das empresas e dos candidatos.
+
+### 3.3 Funcionamento
+
+O funcionamento da solução será dividido entre o aplicativo mobile e a plataforma web, com as informações sendo compartilhadas por meio de uma API REST e armazenadas em um banco de dados centralizado.
+
+No aplicativo mobile, o candidato poderá realizar seu cadastro e autenticação, preencher e atualizar seu perfil profissional, visualizar as vagas disponíveis e realizar candidaturas. Após se candidatar, poderá acompanhar o status de suas candidaturas diretamente pelo aplicativo.
+
+O aplicativo também disponibilizará uma área de cursos, na qual o candidato poderá acessar conteúdos de capacitação profissional. Entre esses conteúdos estará o curso relacionado à diversidade étnico-racial e inclusão. O sistema poderá registrar o progresso do candidato nos cursos, permitindo acompanhar os conteúdos já realizados.
+
+Na plataforma web, as empresas poderão realizar o gerenciamento das vagas e consultar os candidatos que participaram dos processos seletivos. Os responsáveis pelo sistema também poderão administrar os cursos e conteúdos disponibilizados aos usuários.
+
+A comunicação entre o aplicativo e a plataforma web será realizada por meio de uma API REST desenvolvida com ASP.NET Core. As informações serão persistidas em banco de dados utilizando Entity Framework, permitindo que os dados relacionados aos usuários, empresas, vagas, candidaturas, cursos e progresso sejam armazenados de maneira centralizada.
+
+De forma simplificada, o funcionamento da solução seguirá o seguinte fluxo:
+
+**Candidato → Aplicativo Mobile → API REST → Banco de Dados**
+
+**Empresa → Plataforma Web → API REST → Banco de Dados**
+
+Dessa maneira, os diferentes componentes da solução estarão integrados, permitindo que as informações sejam compartilhadas entre o aplicativo e a plataforma administrativa.
+
+```
+             CONECTATALENTOS
+                   │
+         ┌─────────┴─────────┐
+         │                   │
+     CANDIDATO            EMPRESA
+         │                   │
+         ▼                   ▼
+    📱 MOBILE             💻 WEB
+         │                   │
+         └─────────┬─────────┘
+                   ▼
+              ⚙️ API REST
+                   │
+                   ▼
+              🗄️ BANCO
+```
+
+## 4 EMPREENDEDORISMO EM TI
+
+### 4.1 Modelo de negócio
+
+A ConectaTalentos será estruturada como uma empresa de tecnologia que oferece uma plataforma digital de recrutamento e desenvolvimento profissional para pequenas e médias empresas.
+
+O modelo de negócio será baseado na disponibilização da plataforma como um serviço, permitindo que empresas utilizem os recursos de gerenciamento de vagas, candidatos e processos seletivos mediante contratação de um plano de utilização.
+
+A plataforma será composta por dois ambientes principais. O primeiro será o aplicativo mobile, destinado aos candidatos, por meio do qual será possível criar um perfil profissional, consultar vagas, realizar candidaturas, acompanhar processos seletivos e acessar cursos de capacitação. O segundo será a plataforma web administrativa, destinada às empresas, permitindo o gerenciamento das vagas e dos candidatos.
+
+A principal fonte de receita da ConectaTalentos será a contratação de planos pelas empresas. Poderão ser oferecidos diferentes níveis de utilização, de acordo com a quantidade de vagas ou recursos disponibilizados. Dessa forma, o modelo permite que pequenas empresas iniciem com uma opção mais acessível e posteriormente ampliem sua utilização da plataforma.
+
+A proposta de valor do negócio está relacionada à centralização dos processos de recrutamento e ao oferecimento de recursos adicionais de desenvolvimento profissional, incluindo conteúdos relacionados à diversidade e inclusão.
+
+### 4.2 Mercado
+
+A ConectaTalentos estará inserida no mercado de tecnologia aplicada aos processos de recursos humanos, atendendo principalmente pequenas e médias empresas que necessitam organizar seus processos de recrutamento e seleção.
+
+O público empresarial da plataforma será composto por organizações que buscam uma alternativa digital para administrar vagas e candidatos de maneira centralizada. A solução também terá como público os candidatos que procuram oportunidades profissionais e desejam utilizar recursos de capacitação durante sua busca por emprego.
+
+A estratégia inicial da empresa será direcionar a solução para organizações que necessitam de uma plataforma simples e integrada, evitando competir inicialmente por funcionalidades excessivamente complexas. O foco estará na facilidade de utilização, centralização das informações e integração entre recrutamento e desenvolvimento profissional.
+
+A presença de recursos relacionados à diversidade e à inclusão também poderá contribuir para diferenciar a solução, oferecendo às empresas conteúdos que auxiliem na conscientização de seus usuários sobre a importância da diversidade no ambiente profissional.
+
+### 4.3 Concorrência
+
+O mercado de recrutamento digital possui diferentes plataformas que permitem a divulgação de vagas e a aproximação entre empresas e candidatos. Entre os exemplos conhecidos estão LinkedIn, Indeed e Gupy, que oferecem diferentes recursos relacionados a oportunidades profissionais e processos de recrutamento.
+
+A ConectaTalentos não terá como objetivo competir diretamente com essas plataformas em quantidade de usuários ou volume de oportunidades. Sua proposta será concentrar-se em uma solução mais simples e direcionada às necessidades de pequenas e médias empresas.
+
+Como diferencial, a plataforma integrará recursos de recrutamento com conteúdos de desenvolvimento profissional e conscientização sobre diversidade e inclusão. Dessa maneira, além de facilitar a divulgação e o acompanhamento de vagas, a solução poderá oferecer aos candidatos recursos complementares para sua preparação profissional.
+
+### 4.4 Viabilidade
+
+A viabilidade da ConectaTalentos está relacionada principalmente à utilização de tecnologias amplamente utilizadas no desenvolvimento de aplicações web e mobile. A solução será desenvolvida utilizando Flutter para o aplicativo mobile e ASP.NET Core para a construção da API e da plataforma web, com Entity Framework para integração com o banco de dados.
+
+A utilização de uma arquitetura baseada em API permite que o aplicativo mobile e a plataforma web compartilhem os mesmos serviços e informações, evitando a necessidade de desenvolver estruturas independentes para cada aplicação.
+
+Os principais custos previstos para uma futura implantação da solução estariam relacionados à hospedagem dos serviços, banco de dados, domínio, manutenção do sistema, segurança e evolução da plataforma. Por utilizar uma infraestrutura baseada em serviços digitais, a empresa poderá iniciar com uma estrutura reduzida e ampliar os recursos conforme o crescimento da quantidade de usuários.
+
+Como fonte de receita, a empresa poderá utilizar planos de assinatura destinados às organizações contratantes. Esse modelo permite estabelecer uma relação entre o número de clientes, a utilização da plataforma e a receita recorrente do negócio.
+
+Considerando a proposta inicial e o público-alvo definido, a solução apresenta potencial de implantação gradual, começando com um conjunto reduzido de funcionalidades e posteriormente incorporando novos recursos de acordo com as necessidades dos clientes.
+
+### 4.5 Sustentabilidade
+
+A sustentabilidade da ConectaTalentos será trabalhada principalmente por meio da utilização de uma solução digital que reduz a necessidade de processos físicos relacionados ao recrutamento e à capacitação profissional.
+
+A centralização de vagas, candidaturas, informações profissionais e conteúdos de treinamento em ambiente digital pode contribuir para a redução do uso de documentos impressos e facilitar o acesso às informações.
+
+No aspecto social, a plataforma também buscará promover a conscientização sobre diversidade e inclusão no ambiente profissional. Para isso, serão disponibilizados conteúdos educacionais, incluindo curso relacionado à diversidade étnico-racial, permitindo que os usuários tenham acesso a informações relacionadas ao respeito à diversidade e ao combate à discriminação.
+
+A sustentabilidade econômica do negócio estará relacionada ao modelo de assinatura utilizado pelas empresas, possibilitando a geração de receita recorrente e a manutenção dos serviços tecnológicos.
+
+Dessa forma, a ConectaTalentos pretende combinar sustentabilidade econômica, utilização responsável de recursos digitais e ações de responsabilidade social, mantendo uma estrutura tecnológica que possa crescer de acordo com a demanda das empresas e dos usuários.
+
+# 5. DESENVOLVIMENTO WEB
+
+## Objetivo deste capítulo
+
+Neste capítulo, vamos apresentar o desenvolvimento da **plataforma web da ConectaTalentos**, responsável principalmente pelas funcionalidades destinadas às empresas e aos administradores do sistema.
+
+A plataforma permitirá, por exemplo:
+
+- cadastro e gerenciamento de empresas;
+- criação e gerenciamento de vagas;
+- visualização de candidatos;
+- acompanhamento de candidaturas;
+- gerenciamento de processos seletivos;
+- consulta de informações dos candidatos;
+- gerenciamento de usuários;
+- acesso a indicadores e informações administrativas.
+
+A aplicação será desenvolvida utilizando o ecossistema **.NET**, com **ASP.NET Core** para a aplicação web e para a API, **Entity Framework Core** para comunicação com o banco de dados e mecanismos de autenticação e autorização para proteger os recursos do sistema.
+
+---
+
+# 5.1 Arquitetura
+
+### O que será explicado aqui?
+
+Primeiro vamos apresentar **como todas as partes do sistema estarão organizadas**.
+
+A ConectaTalentos não será desenvolvida como um único bloco de código. A aplicação será dividida em componentes com responsabilidades diferentes.
+
+Uma arquitetura simplificada será:
+
+**Usuário → Interface Web → ASP.NET Core/API → Entity Framework Core → Banco de Dados**
+
+Além disso, o aplicativo mobile também poderá consumir a mesma API:
+
+**Aplicativo Mobile → API REST → Entity Framework Core → Banco de Dados**
+
+Isso é importante porque evita que o aplicativo mobile e a plataforma web precisem possuir bancos de dados separados.
+
+### Estrutura proposta
+
+```
+                    CONECTATALENTOS
+                          │
+              ┌───────────┴───────────┐
+              │                       │
+        Plataforma Web          Aplicativo Mobile
+              │                       │
+              └───────────┬───────────┘
+                          │
+                       API REST
+                          │
+                    ASP.NET Core
+                          │
+                 Entity Framework
+                          │
+                    Banco de Dados
+```
+
+### Como explicar no PIM?
+
+A arquitetura terá como objetivo promover **separação de responsabilidades**, facilitando manutenção, evolução e integração entre os diferentes componentes.
+
+A interface será responsável pela interação com o usuário, enquanto a camada de aplicação tratará as regras de negócio. A API será responsável pela comunicação entre os clientes e o servidor, e o Entity Framework Core fará a comunicação entre a aplicação e o banco de dados.
+
+### O que podemos colocar visualmente?
+
+Aqui vale muito a pena colocar **um diagrama de arquitetura** no documento.
+
+Por exemplo:
+
+> **Figura X – Arquitetura da plataforma web ConectaTalentos**
+> 
+
+Mostrando:
+
+```
+WEB
+ │
+ ▼
+ASP.NET CORE
+ │
+ ├── Autenticação
+ ├── Vagas
+ ├── Candidatos
+ ├── Empresas
+ └── Processos seletivos
+ │
+ ▼
+API REST
+ │
+ ▼
+ENTITY FRAMEWORK CORE
+ │
+ ▼
+BANCO DE DADOS
+```
+
+---
+
+# 5.2 ASP.NET Core
+
+Aqui vamos explicar **a principal tecnologia utilizada no desenvolvimento web**.
+
+O **ASP.NET Core** será utilizado como framework responsável pela construção da aplicação web e da estrutura de serviços da ConectaTalentos.
+
+Ele ficará responsável por receber as requisições dos usuários, executar as regras necessárias e retornar as informações solicitadas.
+
+### Na prática
+
+Quando uma empresa acessar:
+
+> "Minhas vagas"
+> 
+
+o sistema precisará:
+
+1. identificar o usuário;
+2. verificar se ele está autenticado;
+3. identificar a empresa associada à conta;
+4. buscar as vagas dessa empresa;
+5. consultar o banco de dados;
+6. retornar os dados;
+7. apresentar as vagas na interface.
+
+O ASP.NET Core será responsável por coordenar esse processo.
+
+### Funcionalidades desenvolvidas com ASP.NET Core
+
+Podemos utilizar o framework para implementar:
+
+- páginas da plataforma;
+- controllers/endpoints;
+- regras de negócio;
+- serviços;
+- validações;
+- gerenciamento de requisições;
+- integração com o banco;
+- autenticação;
+- autorização;
+- API REST.
+
+### Exemplo conceitual
+
+Uma requisição:
+
+```
+GET /api/vagas
+```
+
+poderá solicitar as vagas cadastradas.
+
+O servidor receberá essa requisição, consultará os dados e retornará uma resposta.
+
+Por exemplo:
+
+```json
+[
+    {
+        "titulo": "Desenvolvedor .NET",
+        "empresa": "Empresa X",
+        "cidade": "Sorocaba",
+        "status": "Aberta"
+    }
+]
+```
+
+**Não precisamos necessariamente colocar esse código no PIM.** Podemos apresentar apenas exemplos pequenos para demonstrar o funcionamento.
+
+---
+
+# 5.3 API REST
+
+Esta será uma parte **muito importante**, porque conecta o desenvolvimento web com o aplicativo mobile.
+
+A **API REST** funcionará como uma camada de comunicação entre os sistemas.
+
+Imagine que o candidato utilize o aplicativo Flutter enquanto a empresa utiliza a plataforma web.
+
+Os dois sistemas precisarão acessar informações comuns.
+
+Por exemplo:
+
+```
+                  API REST
+                 /        \
+                /          \
+       Aplicativo           Web
+        Flutter           ASP.NET
+             \              /
+              \            /
+               Banco de Dados
+```
+
+### Exemplo prático
+
+O candidato abre o aplicativo e procura:
+
+> "Desenvolvedor .NET"
+> 
+
+O aplicativo envia:
+
+```
+GET /api/vagas?cargo=desenvolvedor
+```
+
+A API recebe a solicitação.
+
+Depois:
+
+```
+API
+ ↓
+Valida requisição
+ ↓
+Consulta banco
+ ↓
+Retorna resultados
+ ↓
+Aplicativo apresenta vagas
+```
+
+### Principais métodos HTTP
+
+Podemos explicar os quatro principais:
+
+| Método | Utilização |
+| --- | --- |
+| GET | Consultar informações |
+| POST | Criar informações |
+| PUT | Atualizar informações |
+| DELETE | Excluir informações |
+
+Por exemplo:
+
+```
+GET    /api/vagas
+POST   /api/vagas
+PUT    /api/vagas/10
+DELETE /api/vagas/10
+```
+
+Isso demonstra que a API terá uma estrutura organizada para manipulação dos recursos do sistema.
+
+### Recursos da API
+
+A API poderá possuir endpoints relacionados a:
+
+```
+/api/usuarios
+/api/empresas
+/api/vagas
+/api/candidatos
+/api/candidaturas
+/api/processos-seletivos
+/api/cursos
+```
+
+Não precisamos implementar dezenas de endpoints apenas para preencher o documento. O importante é demonstrar **quais recursos existirão e qual será a função deles**.
+
+---
+
+# 5.4 Entity Framework
+
+Aqui vamos explicar como a aplicação irá trabalhar com o banco de dados.
+
+O **Entity Framework Core** será utilizado como ORM (*Object-Relational Mapper*).
+
+Simplificando:
+
+> Ele permite que a aplicação trabalhe com os dados do banco utilizando classes e objetos do C#, reduzindo a necessidade de escrever SQL manualmente para todas as operações.
+> 
+
+Por exemplo, podemos ter uma entidade:
+
+```
+Vaga
+ ├── Id
+ ├── Titulo
+ ├── Descricao
+ ├── Salario
+ ├── Localizacao
+ └── Status
+```
+
+Essa entidade será relacionada a uma tabela no banco de dados.
+
+### Fluxo
+
+```
+C# / ASP.NET Core
+        ↓
+Entity Framework Core
+        ↓
+Banco de Dados
+```
+
+Quando a aplicação precisar buscar vagas, por exemplo, o Entity Framework poderá realizar a consulta correspondente no banco.
+
+### O que será abordado
+
+Neste tópico podemos explicar:
+
+- criação das entidades;
+- relacionamento entre entidades;
+- DbContext;
+- consultas;
+- inclusão de registros;
+- atualização;
+- exclusão;
+- migrations;
+- relacionamento entre tabelas.
+
+### Relacionamentos
+
+Um exemplo importante:
+
+```
+EMPRESA
+   │
+   │ 1:N
+   ▼
+ VAGAS
+   │
+   │ 1:N
+   ▼
+CANDIDATURAS
+   │
+   │ N:1
+   ▼
+CANDIDATO
+```
+
+Isso ajuda a demonstrar que o sistema possui uma estrutura de dados coerente.
+
+---
+
+# 5.5 Banco de dados
+
+Agora vamos explicar **onde as informações serão armazenadas**.
+
+O banco de dados será responsável por armazenar as informações necessárias para o funcionamento da plataforma.
+
+Podemos trabalhar com um banco relacional, como **SQL Server**, integrado ao ASP.NET Core por meio do Entity Framework Core.
+
+### Principais tabelas
+
+Uma estrutura inicial poderia ser:
+
+```
+USUARIO
+EMPRESA
+CANDIDATO
+VAGA
+CANDIDATURA
+PROCESSO_SELETIVO
+ETAPA_PROCESSO
+CURSO
+INSCRICAO_CURSO
+```
+
+### Exemplo
+
+A tabela `VAGA` poderia possuir:
+
+| Campo | Função |
+| --- | --- |
+| Id | Identificador |
+| EmpresaId | Empresa responsável |
+| Titulo | Nome da vaga |
+| Descricao | Descrição |
+| Localizacao | Local da vaga |
+| Salario | Faixa salarial |
+| Status | Aberta/fechada |
+| DataCriacao | Data de criação |
+
+Enquanto `CANDIDATURA` poderia relacionar:
+
+```
+Candidato
+     │
+     ▼
+Candidatura
+     │
+     ▼
+Vaga
+     │
+     ▼
+Empresa
+```
+
+Assim conseguimos representar o funcionamento da plataforma.
+
+### Também será explicado
+
+- chaves primárias;
+- chaves estrangeiras;
+- relacionamentos;
+- integridade dos dados;
+- armazenamento;
+- consultas;
+- migrations;
+- organização do banco.
+
+---
+
+# 5.6 Autenticação e segurança
+
+Essa seção será responsável por explicar **como o sistema protegerá as contas e os dados dos usuários**.
+
+Não basta permitir que alguém entre na plataforma. O sistema precisa saber:
+
+> **Quem é esse usuário?**
+> 
+
+E também:
+
+> **O que esse usuário pode fazer?**
+> 
+
+Aqui existe uma diferença importante:
+
+### Autenticação
+
+Verifica **quem é o usuário**.
+
+Exemplo:
+
+```
+E-mail + senha
+       ↓
+Sistema verifica credenciais
+       ↓
+Usuário autenticado
+```
+
+### Autorização
+
+Verifica **o que o usuário pode acessar**.
+
+Por exemplo:
+
+```
+Administrador
+   ↓
+Acesso completo
+
+Empresa
+   ↓
+Gerencia suas vagas e candidatos
+
+Candidato
+   ↓
+Consulta vagas e suas candidaturas
+```
+
+### Segurança das senhas
+
+As senhas **não devem ser armazenadas em texto puro**.
+
+O sistema deverá utilizar mecanismos adequados de **hash de senha**, evitando que a senha original fique armazenada diretamente no banco.
+
+### Proteção da API
+
+A API também deverá verificar a identidade do usuário antes de liberar determinadas operações.
+
+Por exemplo:
+
+```
+POST /api/vagas
+```
+
+não deveria estar disponível para qualquer usuário.
+
+O sistema poderá verificar:
+
+```
+Usuário autenticado?
+       ↓
+     SIM
+       ↓
+É empresa autorizada?
+       ↓
+     SIM
+       ↓
+Pode criar vaga
+```
+
+### Outros pontos que podemos abordar
+
+- HTTPS;
+- autenticação baseada em tokens;
+- autorização por perfil;
+- validação de dados;
+- proteção de endpoints;
+- controle de acesso;
+- tratamento de erros;
+- proteção de informações pessoais.
+
+Como a plataforma trabalha com **dados de candidatos e empresas**, essa seção também pode relacionar a segurança com a **LGPD**, principalmente no tratamento e proteção de dados pessoais.
+
+---
+
+# 5.7 Painel administrativo
+
+Por último, vamos mostrar **o que efetivamente será disponibilizado na plataforma web para as empresas e administradores**.
+
+Esse será o ponto em que toda a parte técnica anterior se transforma em funcionalidades visíveis.
+
+### Painel da empresa
+
+A empresa poderá acessar um painel contendo informações como:
+
+```
+┌─────────────────────────────────┐
+│       CONECTATALENTOS           │
+├─────────────────────────────────┤
+│ Dashboard                       │
+│                                 │
+│ Vagas abertas: 12               │
+│ Candidaturas: 87                │
+│ Processos ativos: 5             │
+│                                 │
+├─────────────────────────────────┤
+│ Vagas                           │
+│ Candidatos                      │
+│ Processos seletivos             │
+│ Perfil da empresa               │
+└─────────────────────────────────┘
+```
+
+### Funcionalidades
+
+**Dashboard**
+
+Apresentará indicadores gerais:
+
+- vagas abertas;
+- número de candidaturas;
+- processos seletivos;
+- candidatos em cada etapa.
+
+**Gerenciamento de vagas**
+
+A empresa poderá:
+
+- criar vaga;
+- editar vaga;
+- encerrar vaga;
+- visualizar candidaturas.
+
+**Candidatos**
+
+A empresa poderá visualizar candidatos relacionados às suas vagas.
+
+**Processo seletivo**
+
+Poderá acompanhar o candidato em diferentes etapas:
+
+```
+Candidatura
+     ↓
+Triagem
+     ↓
+Entrevista
+     ↓
+Avaliação
+     ↓
+Resultado
+```
+
+### Painel administrativo
+
+Além do painel da empresa, o sistema poderá possuir uma área administrativa destinada ao gerenciamento geral da plataforma.
+
+O administrador poderá:
+
+- gerenciar usuários;
+- gerenciar empresas;
+- acompanhar vagas;
+- controlar conteúdos;
+- visualizar indicadores;
+- administrar cursos;
+- realizar ações de moderação.
+
+É importante deixar claro no PIM que **empresa e administrador possuem permissões diferentes**.
+
+---
+
+# Como ficará o capítulo 5 completo
+
+A estrutura final ficará assim:
+
+```
+5. DESENVOLVIMENTO WEB
+
+5.1 Arquitetura
+    └── Estrutura geral do sistema
+    └── Comunicação entre componentes
+    └── Web + Mobile + API + Banco
+
+5.2 ASP.NET Core
+    └── Framework utilizado
+    └── Aplicação web
+    └── Regras de negócio
+    └── Controllers/Endpoints
+
+5.3 API REST
+    └── Comunicação entre sistemas
+    └── HTTP
+    └── GET / POST / PUT / DELETE
+    └── Endpoints
+
+5.4 Entity Framework
+    └── ORM
+    └── Entidades
+    └── DbContext
+    └── Migrations
+    └── Relacionamentos
+
+5.5 Banco de dados
+    └── SQL Server
+    └── Tabelas
+    └── Chaves
+    └── Relacionamentos
+    └── Integridade
+
+5.6 Autenticação e segurança
+    └── Autenticação
+    └── Autorização
+    └── Senhas
+    └── Tokens
+    └── HTTPS
+    └── LGPD
+
+5.7 Painel administrativo
+    └── Dashboard
+    └── Empresas
+    └── Vagas
+    └── Candidatos
+    └── Processos seletivos
+    └── Administração
+```
+
+# 6. DESENVOLVIMENTO MOBILE
+
+## Objetivo do capítulo
+
+Neste capítulo, vamos apresentar o desenvolvimento do aplicativo mobile da ConectaTalentos utilizando **Flutter e Dart**.
+
+O aplicativo permitirá que o candidato:
+
+- crie sua conta;
+- faça login;
+- visualize vagas;
+- pesquise oportunidades;
+- consulte detalhes de uma vaga;
+- candidate-se;
+- acompanhe suas candidaturas;
+- visualize seu perfil.
+
+O aplicativo será integrado à mesma **API REST** apresentada no capítulo anterior.
+
+A ideia geral será:
+
+```
+                 CONECTATALENTOS
+                       │
+              ┌────────┴────────┐
+              │                 │
+        PLATAFORMA WEB     APLICATIVO MOBILE
+           Empresas            Candidatos
+              │                 │
+              └────────┬────────┘
+                       │
+                    API REST
+                       │
+                 ASP.NET CORE
+                       │
+                BANCO DE DADOS
+```
+
+Dessa forma, teremos **um único ecossistema**, em vez de criar um aplicativo isolado.
+
+---
+
+# 6.1 Flutter
+
+## O que será explicado?
+
+Aqui vamos apresentar o **Flutter** como tecnologia utilizada para o desenvolvimento do aplicativo.
+
+O Flutter é um framework que permite criar aplicações multiplataforma utilizando a linguagem **Dart**.
+
+Para o nosso projeto, ele será utilizado para desenvolver o aplicativo da ConectaTalentos.
+
+### Estrutura simplificada
+
+```
+Flutter
+   │
+   ├── Dart
+   │
+   ├── Telas
+   │
+   ├── Widgets
+   │
+   ├── Navegação
+   │
+   └── Comunicação com API
+```
+
+### Por que Flutter?
+
+Para o PIM, podemos destacar algumas características:
+
+- desenvolvimento multiplataforma;
+- utilização de uma única base de código;
+- construção de interfaces por widgets;
+- integração com APIs;
+- possibilidade de armazenamento local;
+- facilidade de evolução do aplicativo.
+
+### Organização do aplicativo
+
+Podemos estruturar o projeto aproximadamente assim:
+
+```
+lib/
+│
+├── main.dart
+│
+├── screens/
+│   ├── login/
+│   ├── home/
+│   ├── vagas/
+│   ├── candidatura/
+│   └── perfil/
+│
+├── models/
+│
+├── services/
+│
+└── widgets/
+```
+
+Não precisamos implementar dezenas de arquivos. Essa estrutura serve para demonstrar que o aplicativo será organizado por responsabilidades.
+
+---
+
+# 6.2 Interface
+
+Aqui vamos mostrar **como o candidato irá interagir com o aplicativo**.
+
+A interface precisa ser simples, intuitiva e coerente com a identidade visual da ConectaTalentos.
+
+## Tela de login
+
+O usuário encontrará:
+
+```
+CONECTATALENTOS
+
+E-mail
+[________________]
+
+Senha
+[________________]
+
+[ ENTRAR ]
+
+Esqueci minha senha
+
+Ainda não tenho uma conta
+```
+
+O login será conectado ao sistema de autenticação da API.
+
+---
+
+## Tela inicial
+
+Depois de entrar, o candidato poderá visualizar as oportunidades disponíveis.
+
+Exemplo:
+
+```
+Olá, Guilherme!
+
+🔎 Buscar vagas...
+
+Vagas recomendadas
+
+┌────────────────────────┐
+│ Desenvolvedor .NET     │
+│ Empresa X              │
+│ Sorocaba - SP          │
+│                        │
+│ [ Ver vaga ]           │
+└────────────────────────┘
+
+┌────────────────────────┐
+│ Analista de Sistemas   │
+│ Empresa Y              │
+│ São Paulo - SP         │
+│                        │
+│ [ Ver vaga ]           │
+└────────────────────────┘
+```
+
+---
+
+## Detalhes da vaga
+
+Ao selecionar uma vaga:
+
+```
+Desenvolvedor .NET
+
+Empresa X
+Sorocaba - SP
+
+Descrição:
+...
+
+Requisitos:
+...
+
+Benefícios:
+...
+
+[ CANDIDATAR-SE ]
+```
+
+Essa será uma das funcionalidades mais importantes do aplicativo.
+
+---
+
+## Minhas candidaturas
+
+O candidato também poderá acompanhar suas candidaturas.
+
+Por exemplo:
+
+```
+Minhas candidaturas
+
+Desenvolvedor .NET
+Empresa X
+
+Status:
+🟡 Em análise
+
+Analista de Sistemas
+Empresa Y
+
+Status:
+🔵 Entrevista
+```
+
+Assim o aplicativo não será apenas um "mural de vagas". Ele terá uma pequena funcionalidade de acompanhamento do processo seletivo.
+
+---
+
+## Perfil
+
+Também teremos uma área simples para:
+
+- nome;
+- e-mail;
+- telefone;
+- cidade;
+- informações profissionais;
+- cursos/capacitações.
+
+Não precisamos transformar isso em um currículo completo dentro do aplicativo.
+
+---
+
+# 6.3 Autenticação
+
+Aqui vamos explicar **como o candidato entrará de maneira segura no aplicativo**.
+
+O fluxo será:
+
+```
+Candidato
+    │
+    ▼
+E-mail + senha
+    │
+    ▼
+Aplicativo Flutter
+    │
+    ▼
+API REST
+    │
+    ▼
+Verificação das credenciais
+    │
+    ├── Inválidas → Erro
+    │
+    └── Válidas
+          │
+          ▼
+      Token de acesso
+          │
+          ▼
+    Usuário autenticado
+```
+
+Depois do login, o aplicativo utilizará o mecanismo de autenticação definido na API para acessar os recursos protegidos.
+
+### Por que isso é importante?
+
+Imagine que o candidato faça:
+
+> "Minhas candidaturas"
+> 
+
+A API precisa saber **qual candidato está fazendo a solicitação**.
+
+Assim, o sistema não pode simplesmente retornar todas as candidaturas existentes.
+
+Ele deverá identificar o usuário autenticado e retornar somente os dados correspondentes àquela conta.
+
+---
+
+# 6.4 Consumo da API
+
+Essa é uma das partes mais importantes do aplicativo porque será responsável pela **integração entre Flutter e ASP.NET Core**.
+
+O aplicativo não terá todas as informações gravadas diretamente dentro dele.
+
+Ele consultará a API.
+
+### Exemplo
+
+O candidato abre a tela de vagas.
+
+O Flutter faz:
+
+```
+GET /api/vagas
+```
+
+A API consulta o banco:
+
+```
+API
+ ↓
+Entity Framework
+ ↓
+Banco de Dados
+```
+
+E retorna:
+
+```json
+[
+  {
+    "titulo": "Desenvolvedor .NET",
+    "empresa": "Empresa X",
+    "localizacao": "Sorocaba"
+  }
+]
+```
+
+O Flutter recebe os dados e monta os componentes visuais.
+
+## Fluxo completo
+
+```
+CANDIDATO
+    ↓
+APLICATIVO FLUTTER
+    ↓
+REQUISIÇÃO HTTP
+    ↓
+API REST
+    ↓
+ASP.NET CORE
+    ↓
+ENTITY FRAMEWORK
+    ↓
+BANCO DE DADOS
+    ↑
+RESPOSTA
+    ↑
+API
+    ↑
+FLUTTER
+    ↑
+TELA
+```
+
+Esse fluxo é excelente para colocar no PIM porque demonstra que **o aplicativo mobile está realmente integrado ao desenvolvimento web**.
+
+---
+
+## Operações principais
+
+Podemos trabalhar com:
+
+| Operação | API | Função |
+| --- | --- | --- |
+| Consultar | GET | Buscar vagas |
+| Criar | POST | Criar candidatura |
+| Atualizar | PUT | Atualizar dados |
+| Excluir | DELETE | Remover dados quando permitido |
+
+Por exemplo:
+
+```
+GET  /api/vagas
+GET  /api/vagas/10
+
+POST /api/candidaturas
+
+GET  /api/candidaturas/minhas
+```
+
+Não precisamos criar dezenas de endpoints. Devemos implementar somente os necessários para o funcionamento do protótipo.
+
+---
+
+# 6.5 Armazenamento local
+
+Agora temos uma questão interessante.
+
+Nem todas as informações precisam ser buscadas novamente no servidor toda vez que o usuário abrir o aplicativo.
+
+O aplicativo poderá utilizar **armazenamento local** para guardar determinadas informações.
+
+### O que poderia ser armazenado?
+
+Por exemplo:
+
+- preferência de tema;
+- filtros utilizados;
+- informações temporárias;
+- estado da sessão;
+- dados necessários para melhorar a experiência do usuário.
+
+Um ponto importante é:
+
+> **Não devemos armazenar senhas em texto puro no dispositivo.**
+> 
+
+Também precisamos evitar colocar informações sensíveis desnecessariamente no armazenamento local.
+
+### Exemplo
+
+O usuário escolhe:
+
+> "Vagas em Sorocaba"
+> 
+
+O aplicativo pode guardar essa preferência.
+
+Quando ele abrir novamente:
+
+```
+Aplicativo
+    ↓
+Recupera preferência local
+    ↓
+Aplica filtro
+    ↓
+Consulta API
+```
+
+### Por que isso será útil?
+
+O armazenamento local pode melhorar:
+
+- velocidade;
+- experiência do usuário;
+- persistência de configurações;
+- funcionamento em situações de conectividade limitada.
+
+Mas ele **não substituirá o banco de dados principal**.
+
+A fonte oficial dos dados continuará sendo o servidor.
+
+---
+
+# 6.6 Sincronização
+
+Aqui vamos explicar como os dados do aplicativo e do servidor permanecerão atualizados.
+
+Essa parte está diretamente relacionada ao armazenamento local.
+
+Imagine que o candidato abra o aplicativo e veja:
+
+> 15 vagas disponíveis.
+> 
+
+Enquanto isso, uma empresa acabou de publicar uma nova vaga.
+
+O aplicativo precisa eventualmente atualizar suas informações.
+
+O fluxo será:
+
+```
+APLICATIVO
+     │
+     ▼
+Consulta API
+     │
+     ▼
+Servidor verifica dados
+     │
+     ▼
+Retorna informações atualizadas
+     │
+     ▼
+Flutter atualiza interface
+```
+
+### Exemplo de candidatura
+
+O candidato seleciona:
+
+> **Candidatar-se**
+> 
+
+O aplicativo envia:
+
+```
+POST /api/candidaturas
+```
+
+A API:
+
+```
+Recebe candidatura
+      ↓
+Valida usuário
+      ↓
+Valida vaga
+      ↓
+Salva no banco
+      ↓
+Retorna resultado
+```
+
+O aplicativo recebe:
+
+```
+Candidatura realizada com sucesso!
+```
+
+Quando o candidato acessar novamente **Minhas candidaturas**, o aplicativo consulta a API e recebe o estado atualizado.
+
+---
+
+# Como podemos tratar a sincronização sem complicar o projeto?
+
+Isso é importante para o nosso PIM.
+
+**Não precisamos criar um sistema complexo de sincronização offline**, com banco local completo, filas de requisições e resolução de conflitos.
+
+Para o projeto, podemos utilizar uma estratégia simples:
+
+### Quando houver internet
+
+```
+Flutter → API → Banco
+```
+
+Os dados serão consultados diretamente no servidor.
+
+### Quando abrir novamente o aplicativo
+
+```
+Flutter
+  ↓
+API
+  ↓
+Dados atualizados
+```
+
+### Dados locais
+
+Usaremos armazenamento local apenas para informações simples que realmente façam sentido permanecer no dispositivo.
+
+Isso deixa o projeto **mais simples de implementar**, mas ainda permite explicar o conceito de sincronização no PIM.
+
+---
+
+# Visão geral do aplicativo
+
+No final, teremos aproximadamente este fluxo:
+
+```
+                    APP CONECTATALENTOS
+                           │
+             ┌─────────────┴─────────────┐
+             │                           │
+          LOGIN                       CADASTRO
+             │
+             ▼
+           HOME
+             │
+      ┌──────┼───────────┐
+      │      │           │
+      ▼      ▼           ▼
+    VAGAS  CANDIDATURAS PERFIL
+      │
+      ▼
+ DETALHES DA VAGA
+      │
+      ▼
+ CANDIDATAR-SE
+      │
+      ▼
+      API
+      │
+      ▼
+ ASP.NET CORE
+      │
+      ▼
+ ENTITY FRAMEWORK
+      │
+      ▼
+ BANCO DE DADOS
+```
+
+# Estrutura final do capítulo 6
+
+Assim, nosso capítulo ficará organizado desta maneira:
+
+```
+6. DESENVOLVIMENTO MOBILE
+
+6.1 Flutter
+    ├── Flutter e Dart
+    ├── Estrutura do projeto
+    └── Organização das responsabilidades
+
+6.2 Interface
+    ├── Login
+    ├── Tela inicial
+    ├── Pesquisa de vagas
+    ├── Detalhes da vaga
+    ├── Candidaturas
+    └── Perfil
+
+6.3 Autenticação
+    ├── Login
+    ├── Validação
+    ├── Token
+    └── Controle de acesso
+
+6.4 Consumo da API
+    ├── Comunicação HTTP
+    ├── GET
+    ├── POST
+    ├── PUT
+    └── Integração com ASP.NET Core
+
+6.5 Armazenamento local
+    ├── Preferências
+    ├── Sessão
+    ├── Dados temporários
+    └── Segurança das informações
+
+6.6 Sincronização
+    ├── Atualização dos dados
+    ├── Candidaturas
+    ├── Comunicação com servidor
+    └── Atualização da interface
+```
+
+#### A integração dos capítulos 5 e 6 fica muito boa
+
+O ponto forte do projeto será justamente **não tratar Web e Mobile como dois projetos separados**.
+
+Teremos:
+
+**Capítulo 5 – Desenvolvimento Web**
+
+> ASP.NET Core + API REST + Entity Framework + Banco de Dados
+> 
+
+**Capítulo 6 – Desenvolvimento Mobile**
+
+> Flutter + Interface + Autenticação + Consumo da API + Armazenamento
+> 
+
+E os dois se encontram aqui:
+
+```
+                  CONECTATALENTOS
+                         │
+          ┌──────────────┴──────────────┐
+          │                             │
+     PLATAFORMA WEB                APLICATIVO
+       ASP.NET Core                  Flutter
+          │                             │
+          └──────────────┬──────────────┘
+                         │
+                      API REST
+                         │
+                    ASP.NET Core
+                         │
+                 Entity Framework
+                         │
+                    SQL Server
+```
+
+# 7. RESPONSABILIDADE SOCIAL
+
+## Objetivo do capítulo
+
+Neste capítulo, vamos demonstrar que a ConectaTalentos não será pensada apenas como uma plataforma tecnológica para divulgação de vagas.
+
+A proposta também deverá considerar aspectos relacionados a:
+
+- inclusão profissional;
+- diversidade no ambiente de trabalho;
+- valorização da diversidade étnico-racial;
+- educação e conscientização;
+- capacitação profissional.
+
+O ponto principal será mostrar que a tecnologia pode ser utilizada para **ampliar o acesso a oportunidades e apoiar práticas mais inclusivas dentro das organizações**.
+
+A estrutura ficará:
+
+```
+7. RESPONSABILIDADE SOCIAL
+│
+├── 7.1 Inclusão
+├── 7.2 Diversidade
+├── 7.3 Leis 10.639/2003 e 11.645/2008
+└── 7.4 Treinamento corporativo
+```
+
+---
+
+# 7.1 Inclusão
+
+Aqui vamos explicar **como a ConectaTalentos pode contribuir para tornar o acesso às oportunidades profissionais mais inclusivo**.
+
+A ideia não é afirmar que a plataforma resolverá problemas sociais complexos, mas demonstrar que ela possui recursos pensados para **reduzir determinadas barreiras de acesso à informação e às oportunidades**.
+
+### O que podemos fazer na prática?
+
+O candidato poderá encontrar vagas de maneira centralizada, sem precisar procurar oportunidades em diversos lugares.
+
+Por exemplo:
+
+```
+Candidato
+    ↓
+Aplicativo ConectaTalentos
+    ↓
+Pesquisa de vagas
+    ↓
+Visualização dos requisitos
+    ↓
+Candidatura
+```
+
+Isso facilita o acesso às oportunidades.
+
+### Acessibilidade
+
+Também podemos considerar recursos simples de acessibilidade na interface:
+
+- textos com tamanho adequado;
+- contraste visual;
+- navegação simples;
+- botões claramente identificados;
+- linguagem objetiva;
+- organização consistente das telas.
+
+Como estamos desenvolvendo um aplicativo mobile, podemos aproveitar recursos de acessibilidade oferecidos pelo próprio sistema operacional.
+
+### Inclusão profissional
+
+Outro ponto será permitir que a plataforma apresente oportunidades de diferentes níveis profissionais.
+
+Por exemplo:
+
+- estágio;
+- jovem aprendiz;
+- primeiro emprego;
+- nível júnior;
+- nível pleno;
+- nível sênior.
+
+Isso amplia o público que pode utilizar a plataforma.
+
+### Importante para o PIM
+
+Não precisamos criar um **sistema complexo de cotas ou classificação automática de candidatos**.
+
+A proposta pode simplesmente estabelecer que a plataforma deve apresentar oportunidades de maneira acessível e permitir que empresas adotem práticas inclusivas em seus processos seletivos.
+
+---
+
+# 7.2 Diversidade
+
+Agora entramos especificamente na questão da **diversidade no ambiente profissional**.
+
+A ConectaTalentos poderá trabalhar esse tema principalmente através de **informação, capacitação e conscientização**.
+
+Podemos considerar diferentes dimensões da diversidade, como:
+
+- diversidade étnico-racial;
+- gênero;
+- pessoas com deficiência;
+- faixa etária;
+- diferentes contextos sociais e culturais.
+
+O objetivo não será classificar candidatos com base nessas características.
+
+Pelo contrário: devemos deixar claro que a plataforma deverá evitar mecanismos que promovam **discriminação indevida**.
+
+### Exemplo
+
+Em vez de criar um sistema que diga:
+
+> "Candidato pertence a determinado grupo → prioridade automática."
+> 
+
+podemos trabalhar com:
+
+> "Empresa possui práticas inclusivas → disponibiliza informações e políticas no processo seletivo."
+> 
+
+Isso é mais simples tecnicamente e mais adequado ao projeto.
+
+---
+
+## Diversidade dentro das empresas
+
+A plataforma também poderá apresentar informações institucionais das empresas.
+
+Por exemplo:
+
+```
+EMPRESA X
+
+Sobre a empresa
+...
+
+Políticas de diversidade
+✓ Programa de inclusão
+✓ Acessibilidade
+✓ Capacitação
+```
+
+Isso permite que a empresa apresente suas iniciativas relacionadas à diversidade.
+
+---
+
+# 7.3 Leis 10.639/2003 e 11.645/2008
+
+Este será o **ponto central de ligação com a disciplina de Relações Étnico-Raciais e Afrodescendência**.
+
+As Leis **10.639/2003** e **11.645/2008** alteraram a legislação educacional brasileira para incluir conteúdos relacionados à história e cultura afro-brasileira e indígena na educação.
+
+Para o nosso PIM, não precisamos transformar a ConectaTalentos em uma plataforma educacional completa.
+
+Podemos incorporar o tema por meio de **capacitação e conteúdo educativo dentro da proposta da plataforma**.
+
+### Como isso funcionará?
+
+A ConectaTalentos poderá possuir uma área chamada, por exemplo:
+
+> **Capacitação e Diversidade**
+> 
+
+Nela poderão ser disponibilizados conteúdos relacionados a:
+
+- diversidade étnico-racial;
+- história e cultura afro-brasileira;
+- história e cultura indígena;
+- combate ao preconceito;
+- respeito à diversidade;
+- inclusão no ambiente profissional.
+
+### Exemplo
+
+```
+CAPACITAÇÃO
+
+Diversidade e Inclusão
+
+┌─────────────────────────────┐
+│ História e Cultura          │
+│ Afro-Brasileira             │
+│                             │
+│ [ Acessar conteúdo ]        │
+└─────────────────────────────┘
+
+┌─────────────────────────────┐
+│ História e Cultura Indígena │
+│                             │
+│ [ Acessar conteúdo ]        │
+└─────────────────────────────┘
+
+┌─────────────────────────────┐
+│ Diversidade no Ambiente     │
+│ Profissional                │
+│                             │
+│ [ Acessar conteúdo ]        │
+└─────────────────────────────┘
+```
+
+### Por que isso é interessante para o PIM?
+
+Porque conseguimos conectar diretamente:
+
+**Tecnologia + Empreendedorismo + Desenvolvimento Web + Desenvolvimento Mobile + Responsabilidade Social + Relações Étnico-Raciais.**
+
+E sem precisar criar um sistema gigantesco.
+
+---
+
+# 7.4 Treinamento corporativo
+
+Aqui vamos conectar a responsabilidade social **diretamente às empresas**.
+
+A ConectaTalentos poderá oferecer uma área de treinamento corporativo voltada para empresas que desejam capacitar seus colaboradores.
+
+### Exemplo
+
+Uma empresa poderá disponibilizar um treinamento:
+
+> **Diversidade e Inclusão no Ambiente de Trabalho**
+> 
+
+O funcionário poderá acessar:
+
+```
+Treinamento
+     ↓
+Conteúdo
+     ↓
+Material educativo
+     ↓
+Questionário
+     ↓
+Conclusão
+```
+
+Isso transforma a plataforma em algo um pouco mais interessante do que simplesmente um sistema de vagas.
+
+---
+
+## Exemplo de treinamento
+
+Poderíamos ter:
+
+### Módulo 1 — Conceitos de diversidade
+
+Apresentação dos conceitos básicos relacionados à diversidade e inclusão.
+
+### Módulo 2 — Relações étnico-raciais
+
+Conteúdos relacionados à história e cultura afro-brasileira e indígena.
+
+### Módulo 3 — Ambiente profissional
+
+Discussão sobre respeito, convivência e inclusão no ambiente de trabalho.
+
+### Módulo 4 — Boas práticas
+
+Orientações para criação de ambientes profissionais mais inclusivos.
+
+---
+
+# Como isso aparecerá no sistema?
+
+Aqui temos uma oportunidade de deixar o projeto **visualmente interessante**, mas sem aumentar demais a complexidade.
+
+No painel da empresa:
+
+```
+┌───────────────────────────────────────┐
+│          CONECTATALENTOS              │
+├───────────────────────────────────────┤
+│ Dashboard                             │
+│                                       │
+│ Vagas                                 │
+│ Candidatos                            │
+│ Processos seletivos                   │
+│                                       │
+│ Treinamentos                          │
+│                                       │
+│ ┌───────────────────────────────────┐ │
+│ │ Diversidade e Inclusão            │ │
+│ │ 4 módulos                         │ │
+│ │ 75% concluído                     │ │
+│ │                                   │ │
+│ │ [ Continuar ]                     │ │
+│ └───────────────────────────────────┘ │
+└───────────────────────────────────────┘
+```
+
+E no aplicativo:
+
+```
+CAPACITAÇÃO
+
+Meus treinamentos
+
+✓ Diversidade e Inclusão
+  Concluído
+
+▶ Relações Étnico-Raciais
+  Em andamento
+
+○ Inclusão no Ambiente Profissional
+  Não iniciado
+```
+
+---
+
+# O que realmente preciso desenvolver?
+
+Aqui está uma decisão importante para manter o PIM **simples e viável**.
+
+Não precisamos implementar uma plataforma completa de ensino a distância.
+
+Podemos criar uma versão inicial contendo:
+
+### No aplicativo
+
+- área de capacitação;
+- lista de conteúdos;
+- visualização de conteúdo;
+- indicação de progresso.
+
+### Na plataforma web
+
+- cadastro de treinamentos;
+- gerenciamento de conteúdos;
+- acompanhamento básico de conclusão.
+
+E só.
+
+Não precisamos implementar inicialmente:
+
+- videoconferência;
+- inteligência artificial;
+- provas complexas;
+- emissão automática de certificados;
+- sistema avançado de gamificação;
+- marketplace de cursos.
+
+Isso manterá o projeto dentro de um tamanho razoável.
+
+---
+
+# Relação entre os quatro tópicos
+
+Uma forma interessante de enxergar o capítulo é:
+
+```
+             RESPONSABILIDADE SOCIAL
+                       │
+        ┌──────────────┼──────────────┐
+        │              │              │
+    INCLUSÃO       DIVERSIDADE    CAPACITAÇÃO
+        │              │              │
+        │              │              │
+        └──────────────┼──────────────┘
+                       │
+                 TREINAMENTO
+                 CORPORATIVO
+                       │
+                       ▼
+          CONECTATALENTOS
+```
+
+E a questão das leis entra principalmente na parte educacional:
+
+---
+
+```
+Leis 10.639/2003
+        +
+Leis 11.645/2008
+        ↓
+Conteúdos educacionais
+        ↓
+Capacitação
+        ↓
+Conscientização
+        ↓
+Ambiente profissional
+```
+
+# Estrutura final do capítulo 7
+
+Portanto, o capítulo ficará assim:
+
+```
+7. RESPONSABILIDADE SOCIAL
+
+7.1 Inclusão
+    ├── Acesso às oportunidades
+    ├── Inclusão profissional
+    ├── Acessibilidade
+    └── Facilidade de acesso à informação
+
+7.2 Diversidade
+    ├── Diversidade étnico-racial
+    ├── Diversidade cultural
+    ├── Inclusão de pessoas com deficiência
+    ├── Políticas empresariais
+    └── Combate à discriminação
+
+7.3 Leis 10.639/2003 e 11.645/2008
+    ├── Contextualização das leis
+    ├── História e cultura afro-brasileira
+    ├── História e cultura indígena
+    ├── Conteúdos educativos
+    └── Relação com a plataforma
+
+7.4 Treinamento corporativo
+    ├── Cursos internos
+    ├── Conteúdos de diversidade
+    ├── Capacitação dos colaboradores
+    ├── Acompanhamento de progresso
+    └── Integração com empresas
+```
